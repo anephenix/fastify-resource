@@ -8,12 +8,12 @@
 - [x] husky hooks for precommit
 - [x] GitHub action to run tests
 - [x] Github Actions CI badge
+- [x] Dependabot
+- [x] CodeClimate quality badge
 
 ## Next
 
-- [ ] Dependabot
 - [ ] CodeClimate coverage badge
-- [ ] CodeClimate quality badge
 - [ ] Version number badge
 - [ ] Workout strategy for implementing referential integrity on HTTP requests to nested resources
 - [ ] Workout strategy for custom API routes and controller/service actions to support that

@@ -8,6 +8,13 @@
 
 ## Next
 
+- [ ] husky hooks for precommit
+- [ ] GitHub action to run tests
+- [ ] Github Actions CI badge
+- [ ] Dependabot
+- [ ] CodeClimate coverage badge
+- [ ] CodeClimate quality badge
+- [ ] Version number badge
 - [ ] Workout strategy for implementing referential integrity on HTTP requests to nested resources
 - [ ] Workout strategy for custom API routes and controller/service actions to support that
 - [ ] Workout strategy for supporting request headers (e.g. bearer-token for authentication/authorization)

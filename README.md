@@ -2,6 +2,8 @@
 
 A way of creating RESTful CRUD resources for Fastify and Objection.js.
 
+[![Node.js CI](https://github.com/anephenix/fastify-resource/actions/workflows/node.js.yml/badge.svg)](https://github.com/anephenix/fastify-resource/actions/workflows/node.js.yml)
+
 ## Dependencies
 
 - Node.js

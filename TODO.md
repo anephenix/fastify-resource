@@ -5,12 +5,12 @@
 - [x] Add a way to create a whole resource
 - [x] Add unit tests
 - [x] Add documentation
+- [x] husky hooks for precommit
+- [x] GitHub action to run tests
+- [x] Github Actions CI badge
 
 ## Next
 
-- [ ] husky hooks for precommit
-- [ ] GitHub action to run tests
-- [ ] Github Actions CI badge
 - [ ] Dependabot
 - [ ] CodeClimate coverage badge
 - [ ] CodeClimate quality badge

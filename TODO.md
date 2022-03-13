@@ -10,11 +10,11 @@
 - [x] Github Actions CI badge
 - [x] Dependabot
 - [x] CodeClimate quality badge
+- [x] CodeClimate coverage badge
+- [x] Version number badge
 
 ## Next
 
-- [ ] CodeClimate coverage badge
-- [ ] Version number badge
 - [ ] Workout strategy for implementing referential integrity on HTTP requests to nested resources
 - [ ] Workout strategy for custom API routes and controller/service actions to support that
 - [ ] Workout strategy for supporting request headers (e.g. bearer-token for authentication/authorization)

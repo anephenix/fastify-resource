@@ -1,4 +1,4 @@
-import { Service, Request, Reply, StatusCode } from './global';
+import { Service, Request, Reply, StatusCode, Controller } from './global';
 
 /*
 	TODO - use the error object to return the correct HTTP status code
@@ -27,14 +27,6 @@ type ActionServiceMapping = {
 };
 type ActionServiceMappingKey = keyof typeof actionServiceMapping;
 type ServiceKey = 'getAll' | 'create' | 'get' | 'update' | 'delete';
-
-type Controller = {
-  index?: any;
-  create?: any;
-  get?: any;
-  update?: any;
-  delete?: any;
-};
 
 const getCodeForError = (error: Error): StatusCode => {
   switch (error.message) {
@@ -98,16 +90,14 @@ const generateAction = (action: ActionServiceMappingKey, service: Service) => {
 };
 
 const controllerGenerator = (service: Service) => {
-  const controller: Controller = {};
   const actions = Object.keys(
     actionServiceMapping
   ) as ActionServiceMappingKey[];
-  actions.forEach(action => {
-    controller[action] = generateAction(
-      action as ActionServiceMappingKey,
-      service
-    );
-  });
+  const actionSetup = (action: ActionServiceMappingKey) => {
+    return [action, generateAction(action, service)];
+  } 
+  const array = actions.map(actionSetup);
+  const controller: Controller = Object.fromEntries(array);
   return controller;
 };
 

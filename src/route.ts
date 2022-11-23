@@ -2,20 +2,14 @@
 import {
   ResourcesList,
   ResourceOrResourcesList,
-  ControllerAction,
   Route,
+  Controller
 } from './global';
 const snakeCase = require('lodash.snakecase');
 const pluralize = require('pluralize');
 // types
 type RouteType = 'collection' | 'member';
-type Controller = {
-  index: ControllerAction;
-  create: ControllerAction;
-  get: ControllerAction;
-  update: ControllerAction;
-  delete: ControllerAction;
-};
+
 
 // Create the plural form of the resource name
 function generateRoutePart(

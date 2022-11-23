@@ -7,21 +7,27 @@ const objectWithoutKey = (object: any, key: string) => {
   return otherKeys;
 };
 
-const modelAction = async (action: string, model: ModelType, params: Params) => {
+const modelAction = async (
+  action: string,
+  model: ModelType,
+  params: Params
+) => {
   switch (action) {
     case 'getAll':
       return await model.query().where(params);
     case 'get':
-      return await model.query().where(params);//.first();
+      return await model.query().where(params); //.first();
     case 'create':
       return await model.query().insert(params);
     case 'update':
-      return await model.query().patchAndFetchById(params.id, objectWithoutKey(params, 'id'));
+      return await model
+        .query()
+        .patchAndFetchById(params.id, objectWithoutKey(params, 'id'));
     case 'delete':
       await model.query().deleteById(params.id);
       return params.id;
   }
-}
+};
 
 const serviceFunction = (action: string, model: ModelType) => {
   return async (params: Params) => {
@@ -31,8 +37,8 @@ const serviceFunction = (action: string, model: ModelType) => {
     } catch (error) {
       return { success: false, error };
     }
-  }
-}
+  };
+};
 
 // The generator function
 function serviceGenerator(model: ModelType) {

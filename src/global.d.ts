@@ -29,6 +29,14 @@ export type ResourceOrResourcesList = ResourcesList | string;
 
 export type ControllerAction = (request: any, reply: any) => void;
 
+export type Controller = {
+  index: ControllerAction;
+  create: ControllerAction;
+  get: ControllerAction;
+  update: ControllerAction;
+  delete: ControllerAction;
+};
+
 export type Method = 'get' | 'post' | 'patch' | 'delete';
 
 export type Route = {

@@ -1,4 +1,4 @@
-import { Service, Request, Reply, StatusCode, Controller } from './global';
+import { Service, ServiceKey, ActionServiceMapping, Request, Reply, StatusCode, Controller, HandleResponseParams, ActionServiceMappingKey } from './global';
 
 /*
 	TODO - use the error object to return the correct HTTP status code
@@ -8,25 +8,6 @@ import { Service, Request, Reply, StatusCode, Controller } from './global';
 	- 422 for unprocessable entity
 	- 500 for internal server error
 */
-
-// Types
-type HandleResponseParams = {
-  success: boolean;
-  data: any;
-  error: Error;
-  successCode?: StatusCode;
-  rep: Reply;
-};
-
-type ActionServiceMapping = {
-  index: ServiceKey;
-  create: ServiceKey;
-  get: ServiceKey;
-  update: ServiceKey;
-  delete: ServiceKey;
-};
-type ActionServiceMappingKey = keyof typeof actionServiceMapping;
-type ServiceKey = 'getAll' | 'create' | 'get' | 'update' | 'delete';
 
 const getCodeForError = (error: Error): StatusCode => {
   switch (error.message) {
@@ -95,7 +76,7 @@ const controllerGenerator = (service: Service) => {
   ) as ActionServiceMappingKey[];
   const actionSetup = (action: ActionServiceMappingKey) => {
     return [action, generateAction(action, service)];
-  } 
+  };
   const array = actions.map(actionSetup);
   const controller: Controller = Object.fromEntries(array);
   return controller;

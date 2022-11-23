@@ -3,13 +3,12 @@ import {
   ResourcesList,
   ResourceOrResourcesList,
   Route,
-  Controller
+  Controller,
 } from './global';
 const snakeCase = require('lodash.snakecase');
 const pluralize = require('pluralize');
 // types
 type RouteType = 'collection' | 'member';
-
 
 // Create the plural form of the resource name
 function generateRoutePart(

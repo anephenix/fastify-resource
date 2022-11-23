@@ -44,3 +44,23 @@ export type Route = {
   url: string;
   handler: ControllerAction;
 };
+
+export type ServiceKey = 'getAll' | 'create' | 'get' | 'update' | 'delete';
+
+export type ActionServiceMappingKey = keyof ActionServiceMapping;
+
+export type HandleResponseParams = {
+  success: boolean;
+  data: any;
+  error: Error;
+  successCode?: StatusCode;
+  rep: Reply;
+};
+
+export type ActionServiceMapping = {
+  index: ServiceKey;
+  create: ServiceKey;
+  get: ServiceKey;
+  update: ServiceKey;
+  delete: ServiceKey;
+};

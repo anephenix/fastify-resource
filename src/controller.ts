@@ -110,6 +110,38 @@ const actionServiceMapping: ActionServiceMapping = {
         also that auth tokens passed in the request header can also be mapped 
         to its own namespace in the data passed to the service action. 
 
+  Question - if the namespace principle is applied to the data structure of the
+  params passed to the request, should it also be applied to the response as 
+  well?
+
+  For example, if I make a request to create a blog post, should the response be
+  structured in the same way?
+
+  e.g.
+
+  Request: 
+
+  {
+    blogpost: { title: 'My blog post', content: 'Some content' }
+    authtoken: '20fj23890dj012ej091j092j0'
+  }
+
+  Response: 
+  
+  {
+    success: true,
+    data: {
+      blogpost: {
+        id: 'd923d0j20jd02j',
+        title: 'My blog post',
+        content: 'Some content'
+      }
+    }
+  }
+
+  I am thinking that it should, because then there is no ambiguity about what 
+  data is belonging to which resource/metadata.
+
 */
 const getParams = (action: ActionServiceMappingKey, req: Request) => {
   const actionsWithBody = ['create', 'update'];

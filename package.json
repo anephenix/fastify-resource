@@ -28,7 +28,7 @@
     "node": ">=12"
   },
   "devDependencies": {
-    "@size-limit/preset-small-lib": "^7.0.8",
+    "@size-limit/preset-small-lib": "^11.1.5",
     "@types/jest": "^27.5.1",
     "husky": "^8.0.1",
     "npm-upgrade": "^3.1.0",

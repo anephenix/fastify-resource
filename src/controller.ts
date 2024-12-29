@@ -39,8 +39,12 @@ const handleResponse = ({
     if (successCode) rep.code(successCode);
     return data;
   } else {
-    rep.code(getCodeForError(error));
-    return error.message;
+    if (error) {
+      rep.code(getCodeForError(error));
+      return error.message;
+    } else {
+      return 'No error provided';
+    }
   }
 };
 
@@ -80,7 +84,7 @@ const generateAction = (action: ActionServiceMappingKey, service: Service) => {
   };
 };
 
-const controllerGenerator = (service: Service) => {
+const controllerGenerator = (service: Service):Controller => {
   const actions = Object.keys(
     actionServiceMapping
   ) as ActionServiceMappingKey[];

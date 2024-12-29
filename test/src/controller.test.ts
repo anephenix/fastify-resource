@@ -1,16 +1,12 @@
-import { Service, Params, Request, Reply } from '../../src/global';
+import { Service, Params, Request, Reply, ServiceResponse, GenerateServiceParams } from '../../src/global';
 import controller from '../../src/controller';
+import assert from 'assert';
 
-type GenerateServiceParams = {
-  getAll?: (params: Params) => Promise<any>;
-  get?: (params: Params) => Promise<any>;
-  create?: (params: Params) => Promise<any>;
-  update?: (params: Params) => Promise<any>;
-  del?: (params: Params) => Promise<any>;
-};
-
-const func = async (params: Params) => {
-  return params.id;
+const func = async (params: Params): Promise<ServiceResponse> => {
+  return {
+    success: true,
+    data: params.id,
+  };
 };
 
 const generateService = ({
@@ -31,14 +27,14 @@ const generateService = ({
 };
 
 describe('controller', () => {
-  test('should return a controller for a given service, with RESTful controller actions', () => {
+  it('should return a controller for a given service, with RESTful controller actions', () => {
     const service = generateService({});
     const c = controller(service);
-    expect(c.index).toBeDefined();
-    expect(c.create).toBeDefined();
-    expect(c.get).toBeDefined();
-    expect(c.update).toBeDefined();
-    expect(c.delete).toBeDefined();
+    assert(c.index);
+    assert(c.create);
+    assert(c.get);
+    assert(c.update);
+    assert(c.delete);
   });
 
   describe('controller.index', () => {
@@ -55,37 +51,38 @@ describe('controller', () => {
     });
 
     describe('when parameters are good', () => {
-      test('should return a 200 response with the data', async () => {
+      it('should return a 200 response with the data', async () => {
+        const data = [{ id: '42' }];
         const getAll = async (params: Params) => {
-          expect(params).toEqual({});
+          assert.deepStrictEqual(params, {});
           return {
             success: true,
-            data: [{ id: '42' }],
+            data,
           };
         };
         const service = generateService({ getAll });
         const c = controller(service);
         const result = await c.index(request, reply);
-        expect(reply.statusCode).toBe(200);
-        expect(result).toStrictEqual([{ id: '42' }]);
+        assert.strictEqual(reply.statusCode, 200);
+        assert.deepStrictEqual(result, [{ id: '42' }]);
       });
     });
 
     describe('when parameters are not good', () => {
       describe('when the resource is not found', () => {
-        test('should return a 404 response', async () => {
+        it('should return a 404 response', async () => {
           const getAll = async (params: Params) => {
-            expect(params).toEqual({});
-            return {
+            assert.deepStrictEqual(params, {});
+            return Promise.resolve({
               success: false,
               error: new Error('Not found'),
-            };
+            });
           };
           const service = generateService({ getAll });
           const c = controller(service);
           const result = await c.index(request, reply);
-          expect(reply.statusCode).toBe(404);
-          expect(result).toBe('Not found');
+          assert.strictEqual(reply.statusCode, 404);
+          assert.strictEqual(result, 'Not found');
         });
       });
     });
@@ -104,37 +101,37 @@ describe('controller', () => {
       };
     });
 
-    describe('when parameters are good', () => {
-      test('should return a 201 response with the data', async () => {
-        const create = async (params: Params) => {
-          return {
+    describe('when the parameters are good', () => {
+      it('should return a 201 response with the data', async () => {
+        const create = async (params: Params): Promise<ServiceResponse> => {
+          return Promise.resolve({
             success: true,
             data: { id: params.id, name: 'bob' },
-          };
+          });
         };
         const service = generateService({ create });
         const c = controller(service);
         const result = await c.create(request, reply);
-        expect(reply.statusCode).toBe(201);
-        expect(result).toStrictEqual({ id: '42', name: 'bob' });
+        assert.strictEqual(reply.statusCode, 201);
+        assert.deepStrictEqual(result, { id: '42', name: 'bob' });
       });
     });
 
     describe('when parameters are not good', () => {
       describe('when the resource is not found', () => {
-        test('should return a 404 response', async () => {
-          const create = async (params: Params) => {
-            expect(params).toEqual({ id: '42', name: 'bob' });
-            return {
+        it('should return a 404 response', async () => {
+          const create = async (params: Params): Promise<ServiceResponse> => {
+            assert.deepStrictEqual(params, { id: '42', name: 'bob' });
+            return Promise.resolve({
               success: false,
               error: new Error('Not found'),
-            };
+            });
           };
           const service = generateService({ create });
           const c = controller(service);
           const result = await c.create(request, reply);
-          expect(reply.statusCode).toBe(404);
-          expect(result).toBe('Not found');
+          assert.strictEqual(reply.statusCode, 404);
+          assert.strictEqual(result, 'Not found');
         });
       });
     });
@@ -154,9 +151,9 @@ describe('controller', () => {
     });
 
     describe('when parameters are good', () => {
-      test('should return a 200 response with the data', async () => {
+      it('should return a 200 response with the data', async () => {
         const get = async (params: Params) => {
-          expect(params).toEqual({ id: '42' });
+          assert.deepStrictEqual(params, { id: '42' });
           return {
             success: true,
             data: { id: '42', name: 'bob' },
@@ -165,16 +162,16 @@ describe('controller', () => {
         const service = generateService({ get });
         const c = controller(service);
         const result = await c.get(request, reply);
-        expect(reply.statusCode).toBe(200);
-        expect(result).toStrictEqual({ id: '42', name: 'bob' });
+        assert.strictEqual(reply.statusCode, 200);
+        assert.deepStrictEqual(result, { id: '42', name: 'bob' });
       });
     });
 
     describe('when parameters are not good', () => {
       describe('when the resource is not found', () => {
-        test('should return a 404 response', async () => {
+        it('should return a 404 response', async () => {
           const get = async (params: Params) => {
-            expect(params).toEqual({ id: '42' });
+            assert.deepStrictEqual(params, { id: '42' });
             return {
               success: false,
               error: new Error('Not found'),
@@ -183,8 +180,8 @@ describe('controller', () => {
           const service = generateService({ get });
           const c = controller(service);
           const result = await c.get(request, reply);
-          expect(reply.statusCode).toBe(404);
-          expect(result).toBe('Not found');
+          assert.strictEqual(reply.statusCode, 404);
+          assert.strictEqual(result, 'Not found');
         });
       });
     });
@@ -204,9 +201,9 @@ describe('controller', () => {
     });
 
     describe('when parameters are good', () => {
-      test('should return a 200 response with the data', async () => {
+      it('should return a 200 response with the data', async () => {
         const update = async (params: Params) => {
-          expect(params).toEqual({ id: '42', name: 'john' });
+          assert.deepStrictEqual(params, { id: '42', name: 'john' });
           return {
             success: true,
             data: { id: params.id, name: 'john' },
@@ -215,16 +212,16 @@ describe('controller', () => {
         const service = generateService({ update });
         const c = controller(service);
         const result = await c.update(request, reply);
-        expect(reply.statusCode).toBe(200);
-        expect(result).toStrictEqual({ id: '42', name: 'john' });
+        assert.strictEqual(reply.statusCode, 200);
+        assert.deepStrictEqual(result, { id: '42', name: 'john' });
       });
     });
 
     describe('when parameters are not good', () => {
       describe('when the resource is not found', () => {
-        test('should return a 404 response', async () => {
+        it('should return a 404 response', async () => {
           const update = async (params: Params) => {
-            expect(params).toEqual({ id: '42', name: 'john' });
+            assert.deepStrictEqual(params, { id: '42', name: 'john' });
             return {
               success: false,
               error: new Error('Not found'),
@@ -233,8 +230,8 @@ describe('controller', () => {
           const service = generateService({ update });
           const c = controller(service);
           const result = await c.update(request, reply);
-          expect(reply.statusCode).toBe(404);
-          expect(result).toBe('Not found');
+          assert.strictEqual(reply.statusCode, 404);
+          assert.strictEqual(result, 'Not found');
         });
       });
     });
@@ -254,7 +251,7 @@ describe('controller', () => {
     });
 
     describe('when parameters are good', () => {
-      test('should return a 200 response with the data', async () => {
+      it('should return a 200 response with the data', async () => {
         const del = async (params: Params) => {
           return {
             success: true,
@@ -264,16 +261,16 @@ describe('controller', () => {
         const service = generateService({ del });
         const c = controller(service);
         const result = await c.delete(request, reply);
-        expect(reply.statusCode).toBe(200);
-        expect(result).toStrictEqual({ id: '42' });
+        assert.strictEqual(reply.statusCode, 200);
+        assert.deepStrictEqual(result, { id: '42' });
       });
     });
 
     describe('when parameters are not good', () => {
       describe('when the resource is not found', () => {
-        test('should return a 404 response', async () => {
+        it('should return a 404 response', async () => {
           const del = async (params: Params) => {
-            expect(params).toEqual({ id: '42' });
+            assert.deepStrictEqual(params, { id: '42' });
             return {
               success: false,
               error: new Error('Not found'),
@@ -282,15 +279,15 @@ describe('controller', () => {
           const service = generateService({ del });
           const c = controller(service);
           const result = await c.delete(request, reply);
-          expect(reply.statusCode).toBe(404);
-          expect(result).toBe('Not found');
+          assert.strictEqual(reply.statusCode, 404);
+          assert.strictEqual(result, 'Not found');
         });
       });
 
       describe('when an error occurs in general', () => {
-        test('should return a 400 response', async () => {
+        it('should return a 400 response', async () => {
           const del = async (params: Params) => {
-            expect(params).toEqual({ id: '42' });
+            assert.deepStrictEqual(params, { id: '42' });
             return {
               success: false,
               error: new Error('Cannot delete this resource'),
@@ -299,8 +296,8 @@ describe('controller', () => {
           const service = generateService({ del });
           const c = controller(service);
           const result = await c.delete(request, reply);
-          expect(reply.statusCode).toBe(400);
-          expect(result).toBe('Cannot delete this resource');
+          assert.strictEqual(reply.statusCode, 400);
+          assert.strictEqual(result, 'Cannot delete this resource');
         });
       });
     });

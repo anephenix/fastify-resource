@@ -1,28 +1,28 @@
 import { ModelType } from '../../src/global';
 
 // A simple in-memory datastore
-const records: Array<any> = [];
+const records: Array<Record<string, unknown>> = [];
 
 // A mock of how an Objection.js model works
 export const model: ModelType = {
   query: () => {
     return {
-      where: (params: any) => {
+      where: (params: Record<string, unknown>) => {
         if (params.bad) throw new Error('bad query');
-        if (params.id) return records.find(r => r.id === params.id);
+        if (params.id) return records.find((r) => r.id === params.id);
         return records;
       },
 
-      insert: (params: any) => {
+      insert: (params: Record<string, unknown>) => {
         if (params.bad) throw new Error('bad query');
         const record = { id: records.length + 1, name: params.name };
         records.push(record);
         return record;
       },
 
-      patchAndFetchById: (id: number, params: any) => {
+      patchAndFetchById: (id: number, params: Record<string, unknown>) => {
         if (params.bad) throw new Error('bad query');
-        const record = records.find(r => r.id === id);
+        const record = records.find((r) => r.id === id);
         if (record) {
           const index = records.indexOf(record);
           records[index] = { ...record, ...params };

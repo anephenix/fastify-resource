@@ -2,7 +2,8 @@ import { Params, ModelType } from './global';
 
 // Helper functions
 
-const objectWithoutKey = (object: any, key: string) => {
+const objectWithoutKey = (object: Record<string, unknown>, key: string) => {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { [key]: deletedKey, ...otherKeys } = object;
   return otherKeys;
 };

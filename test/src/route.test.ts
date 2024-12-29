@@ -3,10 +3,11 @@ import {
   generateRoutePart,
   generateRoute,
 } from '../../src/route';
+import assert from 'assert';
 
 describe('route', () => {
   describe('#resourceRoutes', () => {
-    test('should return an array of RESTful routes linked to a controller', () => {
+    it('should return an array of RESTful routes linked to a controller', () => {
       const controller = {
         index: () => {},
         get: () => {},
@@ -16,7 +17,7 @@ describe('route', () => {
       };
       const resourceList = ['user', 'post'];
       const routes = resourceRoutes(resourceList, controller);
-      expect(routes).toStrictEqual([
+      assert.deepStrictEqual(routes, [
         {
           method: 'get',
           url: '/users/:user_id/posts',
@@ -46,7 +47,7 @@ describe('route', () => {
     });
 
     describe('when passed a resource as a string', () => {
-      test('should return an array of RESTful routes linked to a controller', () => {
+      it('should return an array of RESTful routes linked to a controller', () => {
         const controller = {
           index: () => {},
           get: () => {},
@@ -56,7 +57,7 @@ describe('route', () => {
         };
         const resourceList = 'user';
         const routes = resourceRoutes(resourceList, controller);
-        expect(routes).toStrictEqual([
+        assert.deepStrictEqual(routes, [
           { method: 'get', url: '/users', handler: controller.index },
           { method: 'post', url: '/users', handler: controller.create },
           { method: 'get', url: '/users/:id', handler: controller.get },
@@ -69,52 +70,58 @@ describe('route', () => {
 
   describe('#generateRoute', () => {
     describe('when finalType is collection', () => {
-      test('should return the collection url with the resources in the list', () => {
+      it('should return the collection url with the resources in the list', () => {
         const resourceList = ['application', 'environment'];
         const finalType = 'collection';
         const result = generateRoute(resourceList, finalType);
-        expect(result).toBe('/applications/:application_id/environments');
+        assert.strictEqual(
+          result,
+          '/applications/:application_id/environments'
+        );
       });
     });
 
     describe('when finalType is member', () => {
-      test('should return the member url with the resources in the list', () => {
+      it('should return the member url with the resources in the list', () => {
         const resourceList = ['application', 'environment'];
         const finalType = 'member';
         const result = generateRoute(resourceList, finalType);
-        expect(result).toBe('/applications/:application_id/environments/:id');
+        assert.strictEqual(
+          result,
+          '/applications/:application_id/environments/:id'
+        );
       });
     });
   });
 
   describe('#generateRoutePart', () => {
     describe('when passed a collection type', () => {
-      test('should return the plural form of the resource name as a url route', () => {
+      it('should return the plural form of the resource name as a url route', () => {
         const resource = 'application';
         const type = 'collection';
         const result = generateRoutePart(resource, type);
-        expect(result).toBe('/applications');
+        assert.strictEqual(result, '/applications');
       });
     });
 
     describe('when passed a member type', () => {
       describe('and when last is true', () => {
-        test('should return the url with the id parameter as id', () => {
+        it('should return the url with the id parameter as id', () => {
           const resource = 'application';
           const type = 'member';
           const last = true;
           const result = generateRoutePart(resource, type, last);
-          expect(result).toBe('/applications/:id');
+          assert.strictEqual(result, '/applications/:id');
         });
       });
 
       describe('and when last is false', () => {
-        test('should return the url with the id parameter as a snake-cased resource plus _id', () => {
+        it('should return the url with the id parameter as a snake-cased resource plus _id', () => {
           const resource = 'application';
           const type = 'member';
           const last = false;
           const result = generateRoutePart(resource, type, last);
-          expect(result).toBe('/applications/:application_id');
+          assert.strictEqual(result, '/applications/:application_id');
         });
       });
     });

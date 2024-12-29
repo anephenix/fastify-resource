@@ -28,6 +28,11 @@ const getCodeForError = (error: Error): StatusCode => {
   }
 };
 
+const handleSuccessfulResponse = ({data, successCode, rep}: HandleResponseParams) => {
+  if (successCode) rep.code(successCode);
+  return data;
+};
+
 const handleResponse = ({
   success,
   data,
@@ -35,16 +40,12 @@ const handleResponse = ({
   successCode,
   rep,
 }: HandleResponseParams) => {
-  if (success) {
-    if (successCode) rep.code(successCode);
-    return data;
+  if (success) return (handleSuccessfulResponse({ success, data, successCode, rep }));
+  if (error) {
+    rep.code(getCodeForError(error));
+    return error.message;
   } else {
-    if (error) {
-      rep.code(getCodeForError(error));
-      return error.message;
-    } else {
-      return 'No error provided';
-    }
+    return 'No error provided';
   }
 };
 

@@ -1,4 +1,4 @@
-import { Params, ModelType } from './global';
+import { Params, ModelType, ServiceResponse } from './global';
 
 // Helper functions
 
@@ -31,12 +31,18 @@ const modelAction = async (
 };
 
 const serviceFunction = (action: string, model: ModelType) => {
-  return async (params: Params) => {
+  return async (params: Params):Promise<ServiceResponse> => {
     try {
       const data = await modelAction(action, model, params);
       return { success: true, data };
     } catch (error) {
-      return { success: false, error };
+      if (error instanceof Error) {
+        return { success: false, error };
+      } if (typeof error === 'string') {
+        return { success: false, error: new Error(error) };
+      } else {
+        return { success: false, error: new Error('No error provided') };
+      }
     }
   };
 };

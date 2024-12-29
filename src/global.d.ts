@@ -6,6 +6,13 @@ export type Params = {
   [key: string]: any;
 };
 
+export type ServiceResponse = {
+  success: boolean;
+  error?: Error;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  data?: any;
+}
+
 export type Service = {
   getAll: (params: Params) => Promise<ServiceResponse>;
   create: (params: Params) => Promise<ServiceResponse>;
@@ -57,17 +64,10 @@ export type HandleResponseParams = {
   success: boolean;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   data: any;
-  error?: Error | undefined;
+  error?: Error;
   successCode?: StatusCode;
   rep: Reply;
 };
-
-export type ServiceResponse = {
-  success: boolean;
-  error?: Error | undefined;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  data?: any;
-}
 
 export type ActionServiceMapping = {
   index: ServiceKey;

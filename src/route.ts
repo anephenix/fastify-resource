@@ -5,8 +5,15 @@ import {
   Route,
   Controller,
 } from './global';
-const snakeCase = require('lodash.snakecase');
-const pluralize = require('pluralize');
+import pluralize from 'pluralize';
+
+function toSnakeCase(str: string): string {
+  return str
+    .replace(/([a-z])([A-Z])/g, '$1_$2') // Add an underscore between camelCase words
+    .replace(/[\s-]+/g, '_')             // Replace spaces and dashes with underscores
+    .toLowerCase();                      // Convert to lowercase
+}
+
 // types
 type RouteType = 'collection' | 'member';
 
@@ -18,7 +25,7 @@ function generateRoutePart(
 ) {
   if (type === 'collection') return `/${pluralize(resource)}`;
   return `/${pluralize(resource)}/:${
-    last ? 'id' : snakeCase(resource) + '_id'
+    last ? 'id' : toSnakeCase(resource) + '_id'
   }`;
 }
 

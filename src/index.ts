@@ -15,9 +15,13 @@ type RouteMapParams = {
   handler: ControllerAction;
 };
 
+type FastifyInstance = {
+  [key: string]: (url: string, handler: ControllerAction) => void;
+}
+
 type AttachParams = {
   routes: Array<RouteMapParams>;
-  fastify: any; // TODO - see if type for fastify exists
+  fastify: FastifyInstance;
 };
 
 function resource(model: ModelType, resourceList: ResourceOrResourcesList) {

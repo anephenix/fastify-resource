@@ -1,4 +1,5 @@
-import { ControllerAction } from '../../src/global';
+import { strict as assert } from 'assert';
+import { ControllerAction, RouteParams } from '../../src/global';
 import {
   serviceGenerator,
   controllerGenerator,
@@ -10,45 +11,45 @@ import { model } from '../helpers/model';
 
 describe('index', () => {
   describe('should export the main functions', () => {
-    test('should export the serviceGenerator function', () => {
-      expect(serviceGenerator).toBeDefined();
+    it('should export the serviceGenerator function', () => {
+      assert.ok(serviceGenerator);
     });
-    test('should export the controllerGenerator function', () => {
-      expect(controllerGenerator).toBeDefined();
+    it('should export the controllerGenerator function', () => {
+      assert.ok(controllerGenerator);
     });
-    test('should export the resourceRoutes function', () => {
-      expect(resourceRoutes).toBeDefined();
+    it('should export the resourceRoutes function', () => {
+      assert.ok(resourceRoutes);
     });
   });
 
   describe('#resource', () => {
-    test('should generate the service, controller and resource routes from the model and resource list', () => {
+    it('should generate the service, controller and resource routes from the model and resource list', () => {
       const resourceList = ['asset'];
       const { service, controller, routes } = resource(model, resourceList);
-      expect(service).toBeDefined();
-      expect(controller).toBeDefined();
-      expect(routes).toBeDefined();
-      expect(routes[0]).toStrictEqual({
+      assert.ok(service);
+      assert.ok(controller);
+      assert.ok(routes);
+      assert.deepStrictEqual(routes[0], {
         method: 'get',
         url: '/assets',
         handler: controller.index,
       });
-      expect(routes[1]).toStrictEqual({
+      assert.deepStrictEqual(routes[1], {
         method: 'post',
         url: '/assets',
         handler: controller.create,
       });
-      expect(routes[2]).toStrictEqual({
+      assert.deepStrictEqual(routes[2], {
         method: 'get',
         url: '/assets/:id',
         handler: controller.get,
       });
-      expect(routes[3]).toStrictEqual({
+      assert.deepStrictEqual(routes[3], {
         method: 'patch',
         url: '/assets/:id',
         handler: controller.update,
       });
-      expect(routes[4]).toStrictEqual({
+      assert.deepStrictEqual(routes[4], {
         method: 'delete',
         url: '/assets/:id',
         handler: controller.delete,
@@ -57,14 +58,14 @@ describe('index', () => {
   });
 
   describe('#attach', () => {
-    test('should attach the routes to the fastify app', () => {
+    it('should attach the routes to the fastify app', () => {
       const resourceList = ['asset'];
       const { routes, controller } = resource(model, resourceList);
       const routeItems = {
-        get: [] as any,
-        post: [] as any,
-        patch: [] as any,
-        delete: [] as any,
+        get: [] as Array<RouteParams>,
+        post: [] as Array<RouteParams>,
+        patch: [] as Array<RouteParams>,
+        delete: [] as Array<RouteParams>,
       };
       const fastify = {
         get: (url: string, handler: ControllerAction) => {
@@ -81,20 +82,20 @@ describe('index', () => {
         },
       };
       attach({ routes, fastify });
-      expect(routeItems.get.length).toBe(2);
-      expect(routeItems.post.length).toBe(1);
-      expect(routeItems.patch.length).toBe(1);
-      expect(routeItems.delete.length).toBe(1);
-      expect(routeItems.get[0].url).toBe('/assets');
-      expect(routeItems.get[0].handler).toStrictEqual(controller.index);
-      expect(routeItems.get[1].url).toBe('/assets/:id');
-      expect(routeItems.get[1].handler).toStrictEqual(controller.get);
-      expect(routeItems.post[0].url).toBe('/assets');
-      expect(routeItems.post[0].handler).toStrictEqual(controller.create);
-      expect(routeItems.patch[0].url).toBe('/assets/:id');
-      expect(routeItems.patch[0].handler).toStrictEqual(controller.update);
-      expect(routeItems.delete[0].url).toBe('/assets/:id');
-      expect(routeItems.delete[0].handler).toStrictEqual(controller.delete);
+      assert.strictEqual(routeItems.get.length, 2);
+      assert.strictEqual(routeItems.post.length, 1);
+      assert.strictEqual(routeItems.patch.length, 1);
+      assert.strictEqual(routeItems.delete.length, 1);
+      assert.strictEqual(routeItems.get[0].url, '/assets');
+      assert.deepStrictEqual(routeItems.get[0].handler, controller.index);
+      assert.strictEqual(routeItems.get[1].url, '/assets/:id');
+      assert.deepStrictEqual(routeItems.get[1].handler, controller.get);
+      assert.strictEqual(routeItems.post[0].url, '/assets');
+      assert.deepStrictEqual(routeItems.post[0].handler, controller.create);
+      assert.strictEqual(routeItems.patch[0].url, '/assets/:id');
+      assert.deepStrictEqual(routeItems.patch[0].handler, controller.update);
+      assert.strictEqual(routeItems.delete[0].url, '/assets/:id');
+      assert.deepStrictEqual(routeItems.delete[0].handler, controller.delete);
     });
   });
 });

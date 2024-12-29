@@ -47,7 +47,7 @@
     "prettier": "3.4.2",
     "size-limit": "^11.1.5",
     "ts-node": "^10.9.2",
-    "typescript": "^3.9.10",
+    "typescript": "^5.7.2",
     "typescript-eslint": "^8.13.0"
   },
   "prettier": {

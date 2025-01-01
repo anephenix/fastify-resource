@@ -11,7 +11,7 @@ export type ServiceResponse = {
   error?: Error;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   data?: any;
-}
+};
 
 export type Service = {
   getAll: (params: Params) => Promise<ServiceResponse>;
@@ -38,7 +38,10 @@ export type ModelType = ObjectionModel;
 export type ResourcesList = Array<string>;
 export type ResourceOrResourcesList = ResourcesList | string;
 
-export type ControllerAction = (request: { params?: unknown, body?: unknown}, reply: unknown) => void;
+export type ControllerAction = (
+  request: { params?: unknown; body?: unknown },
+  reply: unknown
+) => void;
 
 export type Controller = {
   index: ControllerAction;
@@ -77,12 +80,10 @@ export type ActionServiceMapping = {
   delete: ServiceKey;
 };
 
-
 export type RouteParams = {
-  url: string,
-  handler: ControllerAction,
-}
-
+  url: string;
+  handler: ControllerAction;
+};
 
 export type GenerateServiceParams = {
   getAll?: (params: Params) => Promise<ServiceResponse>;
@@ -91,3 +92,5 @@ export type GenerateServiceParams = {
   update?: (params: Params) => Promise<ServiceResponse>;
   del?: (params: Params) => Promise<ServiceResponse>;
 };
+
+export type ErrorOfSomeKind = Error | string | unknown;

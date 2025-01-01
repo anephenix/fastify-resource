@@ -1,4 +1,11 @@
-import { Service, Params, Request, Reply, ServiceResponse, GenerateServiceParams } from '../../src/global';
+import {
+  Service,
+  Params,
+  Request,
+  Reply,
+  ServiceResponse,
+  GenerateServiceParams,
+} from '../../src/global';
 import controller from '../../src/controller';
 import assert from 'assert';
 

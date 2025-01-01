@@ -10,8 +10,8 @@ import pluralize from 'pluralize';
 function toSnakeCase(str: string): string {
   return str
     .replace(/([a-z])([A-Z])/g, '$1_$2') // Add an underscore between camelCase words
-    .replace(/[\s-]+/g, '_')             // Replace spaces and dashes with underscores
-    .toLowerCase();                      // Convert to lowercase
+    .replace(/[\s-]+/g, '_') // Replace spaces and dashes with underscores
+    .toLowerCase(); // Convert to lowercase
 }
 
 // types

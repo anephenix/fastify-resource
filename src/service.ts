@@ -1,4 +1,5 @@
-import { Params, ModelType, ServiceResponse } from './global';
+// Dependencies
+import { Params, ModelType, ServiceResponse, ErrorOfSomeKind } from './global';
 
 // Helper functions
 
@@ -30,19 +31,23 @@ const modelAction = async (
   }
 };
 
+const handleError = (error: ErrorOfSomeKind) => {
+  if (error instanceof Error) {
+    return { success: false, error };
+  } else if (typeof error === 'string') {
+    return { success: false, error: new Error(error) };
+  } else {
+    return { success: false, error: new Error('No error provided') };
+  }
+};
+
 const serviceFunction = (action: string, model: ModelType) => {
-  return async (params: Params):Promise<ServiceResponse> => {
+  return async (params: Params): Promise<ServiceResponse> => {
     try {
       const data = await modelAction(action, model, params);
       return { success: true, data };
     } catch (error) {
-      if (error instanceof Error) {
-        return { success: false, error };
-      } if (typeof error === 'string') {
-        return { success: false, error: new Error(error) };
-      } else {
-        return { success: false, error: new Error('No error provided') };
-      }
+      return handleError(error);
     }
   };
 };

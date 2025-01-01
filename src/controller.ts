@@ -28,7 +28,11 @@ const getCodeForError = (error: Error): StatusCode => {
   }
 };
 
-const handleSuccessfulResponse = ({data, successCode, rep}: HandleResponseParams) => {
+const handleSuccessfulResponse = ({
+  data,
+  successCode,
+  rep,
+}: HandleResponseParams) => {
   if (successCode) rep.code(successCode);
   return data;
 };
@@ -40,7 +44,8 @@ const handleResponse = ({
   successCode,
   rep,
 }: HandleResponseParams) => {
-  if (success) return (handleSuccessfulResponse({ success, data, successCode, rep }));
+  if (success)
+    return handleSuccessfulResponse({ success, data, successCode, rep });
   if (error) {
     rep.code(getCodeForError(error));
     return error.message;
@@ -85,7 +90,7 @@ const generateAction = (action: ActionServiceMappingKey, service: Service) => {
   };
 };
 
-const controllerGenerator = (service: Service):Controller => {
+const controllerGenerator = (service: Service): Controller => {
   const actions = Object.keys(
     actionServiceMapping
   ) as ActionServiceMappingKey[];

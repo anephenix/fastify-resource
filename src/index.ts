@@ -17,7 +17,7 @@ type RouteMapParams = {
 
 type FastifyInstance = {
   [key: string]: (url: string, handler: ControllerAction) => void;
-}
+};
 
 type AttachParams = {
   routes: Array<RouteMapParams>;

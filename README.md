@@ -273,7 +273,7 @@ actions with other interfaces, such as:
 - An interactive REPL
 - A CLI tool
 
-We essentially treat the controller actions as supporting a HTTP API
+We essentially treat the controller actions as supporting a HTTP REST API
 interface to the service actions, alongside the other options.
 
 ### Creating nested routes
@@ -364,4 +364,4 @@ npm t
 
 ### License and Credits
 
-&copy;2022 Anephenix OÜ. All Rights Reserved.
+&copy;2025 Anephenix OÜ. All Rights Reserved.

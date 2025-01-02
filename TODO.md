@@ -15,7 +15,9 @@
 
 ## Next
 
+- [ ] An E2E test that verifies the use case outlined in the README.md file.
 - [ ] Workout strategy for supporting request headers (e.g. bearer-token for authentication/authorization)
+
 - [ ] Workout strategy for supporting preHandlers in fastify
 - [ ] Workout strategy for supporting schema validation in fastify
 - [ ] Workout strategy for custom API routes and controller/service actions to support that

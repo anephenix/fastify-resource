@@ -14,11 +14,9 @@ const records: Array<Record<string, unknown>> = [];
 
 // A mock of how an Objection.js model works
 export const model: ModelType = {
-
-  // Equivalent to doing a query on an Objection.js model 
+  // Equivalent to doing a query on an Objection.js model
   query: () => {
     return {
-
       // Equivalent to Model.query().where(params)
       where: (params: Record<string, unknown>) => {
         if (params.bad) throw new Error('bad query');

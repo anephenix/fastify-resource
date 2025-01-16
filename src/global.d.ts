@@ -1,3 +1,5 @@
+import { FastifyRequest } from 'fastify';
+
 // NOTE - This needs adjusting
 export type Metadata = string | object;
 
@@ -21,10 +23,7 @@ export type Service = {
   delete: (params: Params) => Promise<ServiceResponse>;
 };
 
-export type Request = {
-  params: Params;
-  body?: unknown;
-};
+export type Request = FastifyRequest;
 
 export type StatusCode = 200 | 201 | 400 | 404;
 

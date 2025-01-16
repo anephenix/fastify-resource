@@ -100,7 +100,10 @@ describe('controller', () => {
     let request: Request, reply: Reply;
 
     beforeEach(() => {
-      request = { params: { id: '42' }, body: { name: 'bob' } } as FastifyRequest;
+      request = {
+        params: { id: '42' },
+        body: { name: 'bob' },
+      } as FastifyRequest;
       reply = {
         statusCode: 200,
         code: (code: number) => {
@@ -199,7 +202,10 @@ describe('controller', () => {
     let request: Request, reply: Reply;
 
     beforeEach(() => {
-      request = { params: { id: '42' }, body: { name: 'john' } } as FastifyRequest;
+      request = {
+        params: { id: '42' },
+        body: { name: 'john' },
+      } as FastifyRequest;
       reply = {
         statusCode: 200,
         code: (code: number) => {

@@ -15,7 +15,7 @@ import {
   Controller,
   HandleResponseParams,
   ActionServiceMappingKey,
-  Params
+  Params,
 } from './global';
 
 /*

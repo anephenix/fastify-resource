@@ -10,9 +10,12 @@
     "check-prettier": "prettier src test --check",
     "cover": "cross-env NODE_ENV=test npx nyc --reporter=lcov npm t",
     "lint": "eslint src test",
+    "prepare-patch-release": "npm run update-changelog && git add CHANGELOG.md && git commit -m \"Updated changelog\" && npm version patch",
     "prettier": "prettier src test --write",
+    "publish-patch-release": "npm run prepare-patch-release && git push origin main && git push --tags",
     "size": "size-limit",
     "test": "cross-env NODE_ENV=test npx mocha --require ts-node/register --extensions ts,tsx test/src/* --test",
+    "update-changelog": "npx ts-node scripts/update-changelog.ts",
     "watch": "tsc --project tsconfig.json --watch"
   },
   "keywords": [

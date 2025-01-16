@@ -1,1 +1,106 @@
 # CHANGELOG
+### 0.0.2 - Thursday 16th January, 2025
+
+- Added changelog
+- Tweaks and scripts to automate publishing the package to NPM
+- TypeScript tweaks and some WIP
+- Merge pull request #34 from anephenix/dependabot/npm_and_yarn/typescript-eslint-8.20.0
+- Merge pull request #33 from anephenix/dependabot/npm_and_yarn/typescript-5.7.3
+- Merge pull request #32 from anephenix/dependabot/npm_and_yarn/eslint-9.18.0
+- Merge pull request #31 from anephenix/dependabot/npm_and_yarn/eslint/js-9.18.0
+- Bump typescript-eslint from 8.19.1 to 8.20.0
+- Bump typescript from 5.7.2 to 5.7.3
+- Bump eslint from 9.17.0 to 9.18.0
+- Bump @eslint/js from 9.17.0 to 9.18.0
+- Merge pull request #30 from anephenix/dependabot/npm_and_yarn/typescript-eslint-8.19.1
+- Merge pull request #29 from anephenix/dependabot/npm_and_yarn/fastify-5.2.1
+- Merge pull request #28 from anephenix/dependabot/npm_and_yarn/types/mocha-10.0.10
+- Bump typescript-eslint from 8.19.0 to 8.19.1
+- Bump fastify from 5.2.0 to 5.2.1
+- Bump @types/mocha from 10.0.9 to 10.0.10
+- Added notes on how to handle controller to service data mapping
+- Added code comments for the controller.ts file
+- Formatting tweak
+- Merge branch 'main' of github.com:anephenix/fastify-resource
+- Small tweaks
+- Merge pull request #27 from anephenix/dependabot/npm_and_yarn/eslint/js-9.17.0
+- Merge pull request #25 from anephenix/dependabot/npm_and_yarn/eslint-9.17.0
+- Bump eslint from 9.14.0 to 9.17.0
+- Merge pull request #24 from anephenix/dependabot/npm_and_yarn/mocha-11.0.1
+- Merge pull request #26 from anephenix/dependabot/npm_and_yarn/typescript-eslint-8.19.0
+- Merge pull request #23 from anephenix/dependabot/npm_and_yarn/fastify-5.2.0
+- Formatting changes
+- Bump @eslint/js from 9.14.0 to 9.17.0
+- Bump typescript-eslint from 8.17.0 to 8.19.0
+- Bump mocha from 10.8.2 to 11.0.1
+- Bump fastify from 5.1.0 to 5.2.0
+- Small refactoring
+- Upgraded typescript
+- Updated dependencies
+- Merge pull request #21 from anephenix/dependabot/npm_and_yarn/husky-9.1.7
+- Merge pull request #20 from anephenix/dependabot/npm_and_yarn/typescript-eslint-8.17.0
+- Merge pull request #19 from anephenix/dependabot/npm_and_yarn/globals-15.14.0
+- Merge pull request #18 from anephenix/dependabot/npm_and_yarn/prettier-3.4.2
+- Create SECURITY.md
+- Bump husky from 9.1.6 to 9.1.7
+- Bump typescript-eslint from 8.13.0 to 8.17.0
+- Bump globals from 15.12.0 to 15.14.0
+- Bump prettier from 3.3.3 to 3.4.2
+- Merge pull request #17 from anephenix/feature/convert-to-typescript
+- Fix for running covde coverage in the build pipeline
+- Upgraded the Node.js version used in the build pipeline
+- Replaced tsdx with TypeScript and Mocha and other tools
+- Merge branch 'main' of github.com:anephenix/fastify-resource
+- Updated dependencies
+- Merge pull request #16 from anephenix/dependabot/npm_and_yarn/types/jest-29.5.14
+- Create codeql.yml
+- Bump @types/jest from 29.5.13 to 29.5.14
+- Updated CodeQL YML config
+- Merge pull request #14 from anephenix/dependabot/npm_and_yarn/size-limit/preset-small-lib-11.1.6
+- Bump @size-limit/preset-small-lib from 11.1.5 to 11.1.6
+- Merge pull request #13 from anephenix/dependabot/npm_and_yarn/size-limit-11.1.5
+- Bump size-limit from 7.0.8 to 11.1.5
+- Merge pull request #12 from anephenix/dependabot/npm_and_yarn/types/jest-29.5.13
+- Bump @types/jest from 27.5.1 to 29.5.13
+- Merge pull request #11 from anephenix/dependabot/npm_and_yarn/size-limit/preset-small-lib-11.1.5
+- Merge pull request #10 from anephenix/dependabot/npm_and_yarn/husky-9.1.6
+- Bump @size-limit/preset-small-lib from 7.0.8 to 11.1.5
+- Bump husky from 8.0.1 to 9.1.6
+- Create dependabot.yml
+- Merge pull request #9 from anephenix/dependabot/npm_and_yarn/ws-7.5.10
+- Bump ws from 7.5.7 to 7.5.10
+- Merge pull request #8 from anephenix/dependabot/npm_and_yarn/ip-1.1.9
+- Bump ip from 1.1.5 to 1.1.9
+- Merge pull request #7 from anephenix/dependabot/npm_and_yarn/babel/traverse-7.23.2
+- Bump @babel/traverse from 7.17.3 to 7.23.2
+- Merge pull request #6 from anephenix/dependabot/npm_and_yarn/word-wrap-1.2.4
+- Bump word-wrap from 1.2.3 to 1.2.4
+- Merge pull request #5 from anephenix/dependabot/npm_and_yarn/http-cache-semantics-4.1.1
+- Bump http-cache-semantics from 4.1.0 to 4.1.1
+- Merge pull request #4 from anephenix/dependabot/npm_and_yarn/json5-2.2.3
+- Bump json5 from 2.2.0 to 2.2.3
+- Merge pull request #3 from anephenix/dependabot/npm_and_yarn/decode-uri-component-0.2.2
+- Bump decode-uri-component from 0.2.0 to 0.2.2
+- Linting
+- Type Refactoring
+- More refactoring
+- Refactoring
+- Updated dependencies
+- Updated the Node version
+- Linting
+- Tweaks
+- Merge branch 'main' of github.com:anephenix/fastify-resource
+- Merge pull request #2 from anephenix/dependabot/npm_and_yarn/terser-4.8.1
+- Bump terser from 4.8.0 to 4.8.1
+- Updated dependencies
+- Merge pull request #1 from anephenix/dependabot/npm_and_yarn/minimist-1.2.6
+- Bump minimist from 1.2.5 to 1.2.6
+- More badges and Test coverage configuration
+- Merge branch 'main' of github.com:anephenix/fastify-resource
+- More badges
+- Create codeql-analysis.yml
+- Added status badge
+- Merge branch 'main' of github.com:anephenix/fastify-resource
+- Create node.js.yml
+- Added Husky hook
+- Added some things for the TODO list

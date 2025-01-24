@@ -2,7 +2,7 @@
 
 A way of creating RESTful CRUD resources for Fastify and Objection.js.
 
-[![Node.js CI](https://github.com/anephenix/fastify-resource/actions/workflows/node.js.yml/badge.svg)](https://github.com/anephenix/fastify-resource/actions/workflows/node.js.yml) [![Maintainability](https://api.codeclimate.com/v1/badges/20c424c1bf138e20f13d/maintainability)](https://codeclimate.com/github/anephenix/fastify-resource/maintainability) [![Test Coverage](https://api.codeclimate.com/v1/badges/20c424c1bf138e20f13d/test_coverage)](https://codeclimate.com/github/anephenix/fastify-resource/test_coverage) [![npm version](https://badge.fury.io/js/@anephenix%2Ffastify-resource.svg)](https://badge.fury.io/js/@anephenix%2Ffastify-resource)
+[![npm version](https://badge.fury.io/js/@anephenix%2Ffastify-resource.svg)](https://badge.fury.io/js/@anephenix%2Ffastify-resource) [![Node.js CI](https://github.com/anephenix/fastify-resource/actions/workflows/node.js.yml/badge.svg)](https://github.com/anephenix/fastify-resource/actions/workflows/node.js.yml) [![Maintainability](https://api.codeclimate.com/v1/badges/20c424c1bf138e20f13d/maintainability)](https://codeclimate.com/github/anephenix/fastify-resource/maintainability) [![Test Coverage](https://api.codeclimate.com/v1/badges/20c424c1bf138e20f13d/test_coverage)](https://codeclimate.com/github/anephenix/fastify-resource/test_coverage) [![Socket Badge](https://socket.dev/api/badge/npm/package/@anephenix/fastify-resource)](https://socket.dev/npm/package/@anephenix/fastify-resource)
 
 ## Dependencies
 

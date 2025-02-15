@@ -1,5 +1,24 @@
 # CHANGELOG
 ### 0.0.2 - Thursday 16th January, 2025
+### 0.0.3 - Saturday 15th February, 2025
+
+- Fixed size script
+- Merge pull request #41 from anephenix/dependabot/npm_and_yarn/typescript-eslint-8.24.0
+- Merge pull request #42 from anephenix/dependabot/npm_and_yarn/prettier-3.5.0
+- Merge pull request #40 from anephenix/dependabot/npm_and_yarn/eslint-9.20.0
+- Bump prettier from 3.4.2 to 3.5.0
+- Bump typescript-eslint from 8.23.0 to 8.24.0
+- Bump eslint from 9.19.0 to 9.20.0
+- Merge pull request #39 from anephenix/dependabot/npm_and_yarn/typescript-eslint-8.23.0
+- Bump typescript-eslint from 8.22.0 to 8.23.0
+- Merge pull request #38 from anephenix/dependabot/npm_and_yarn/typescript-eslint-8.22.0
+- Merge pull request #36 from anephenix/dependabot/npm_and_yarn/mocha-11.1.0
+- Merge pull request #35 from anephenix/dependabot/npm_and_yarn/eslint-9.19.0
+- Bump typescript-eslint from 8.20.0 to 8.22.0
+- Bump mocha from 11.0.1 to 11.1.0
+- Bump eslint from 9.18.0 to 9.19.0
+- Update Badges
+
 
 - Added changelog
 - Tweaks and scripts to automate publishing the package to NPM

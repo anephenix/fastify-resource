@@ -1,5 +1,34 @@
 # CHANGELOG
 ### 0.0.2 - Thursday 16th January, 2025
+### 0.0.4 - Monday 10th March, 2025
+
+- Updated dependencies
+- Merge pull request #56 from anephenix/dependabot/npm_and_yarn/typescript-eslint-8.26.1
+- Merge pull request #55 from anephenix/dependabot/npm_and_yarn/prettier-3.5.3
+- Merge pull request #53 from anephenix/dependabot/npm_and_yarn/eslint/js-9.22.0
+- Merge pull request #54 from anephenix/dependabot/npm_and_yarn/eslint-9.22.0
+- Bump typescript-eslint from 8.26.0 to 8.26.1
+- Bump prettier from 3.5.1 to 3.5.3
+- Bump eslint from 9.21.0 to 9.22.0
+- Bump @eslint/js from 9.21.0 to 9.22.0
+- npm update dependency versions
+- Merge pull request #51 from anephenix/dependabot/npm_and_yarn/size-limit/preset-small-lib-11.2.0
+- Merge pull request #50 from anephenix/dependabot/npm_and_yarn/globals-16.0.0
+- Merge pull request #52 from anephenix/dependabot/npm_and_yarn/eslint-9.21.0
+- Merge pull request #48 from anephenix/dependabot/npm_and_yarn/typescript-5.8.2
+- Bump eslint from 9.20.1 to 9.21.0
+- Bump @size-limit/preset-small-lib from 11.1.6 to 11.2.0
+- Bump globals from 15.15.0 to 16.0.0
+- Bump typescript from 5.7.3 to 5.8.2
+- Merge pull request #47 from anephenix/dependabot/npm_and_yarn/eslint-9.20.1
+- Merge pull request #46 from anephenix/dependabot/npm_and_yarn/prettier-3.5.1
+- Bump eslint from 9.20.0 to 9.20.1
+- Merge pull request #45 from anephenix/dependabot/npm_and_yarn/globals-15.15.0
+- Merge pull request #44 from anephenix/dependabot/npm_and_yarn/typescript-eslint-8.24.1
+- Bump prettier from 3.5.0 to 3.5.1
+- Bump globals from 15.14.0 to 15.15.0
+- Bump typescript-eslint from 8.24.0 to 8.24.1
+
 ### 0.0.3 - Saturday 15th February, 2025
 
 - Fixed size script

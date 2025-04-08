@@ -1,5 +1,23 @@
 # CHANGELOG
 ### 0.0.2 - Thursday 16th January, 2025
+### 0.0.5 - Tuesday 8th April, 2025
+
+- Updated dependencies
+- Merge pull request #62 from anephenix/dependabot/npm_and_yarn/eslint-9.24.0
+- Merge pull request #63 from anephenix/dependabot/npm_and_yarn/typescript-5.8.3
+- Bump typescript from 5.8.2 to 5.8.3
+- Bump eslint from 9.23.0 to 9.24.0
+- Merge pull request #61 from anephenix/dependabot/npm_and_yarn/typescript-eslint-8.29.0
+- Merge pull request #60 from anephenix/dependabot/npm_and_yarn/fastify-5.2.2
+- Bump typescript-eslint from 8.28.0 to 8.29.0
+- Bump fastify from 5.2.1 to 5.2.2
+- Merge pull request #59 from anephenix/dependabot/npm_and_yarn/eslint-9.23.0
+- Merge pull request #58 from anephenix/dependabot/npm_and_yarn/typescript-eslint-8.28.0
+- Merge pull request #57 from anephenix/dependabot/npm_and_yarn/eslint/js-9.23.0
+- Bump eslint from 9.22.0 to 9.23.0
+- Bump typescript-eslint from 8.26.1 to 8.28.0
+- Bump @eslint/js from 9.22.0 to 9.23.0
+
 ### 0.0.4 - Monday 10th March, 2025
 
 - Updated dependencies

@@ -67,6 +67,7 @@
   ],
   "dependencies": {
     "fastify": "^5.1.0",
+    "fastify-plugin": "^5.0.1",
     "pluralize": "^8.0.0"
   }
 }

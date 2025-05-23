@@ -98,4 +98,36 @@ describe('index', () => {
       assert.deepStrictEqual(routeItems.delete[0].handler, controller.delete);
     });
   });
+
+  describe('fastifyResource plugin', () => {
+    it('should register routes as a Fastify plugin', async () => {
+      const routeItems = {
+        get: [] as Array<RouteParams>,
+        post: [] as Array<RouteParams>,
+        patch: [] as Array<RouteParams>,
+        delete: [] as Array<RouteParams>,
+      };
+      const fastify = {
+        get: (url: string, handler: ControllerAction) => {
+          routeItems.get.push({ url, handler });
+        },
+        post: (url: string, handler: ControllerAction) => {
+          routeItems.post.push({ url, handler });
+        },
+        patch: (url: string, handler: ControllerAction) => {
+          routeItems.patch.push({ url, handler });
+        },
+        delete: (url: string, handler: ControllerAction) => {
+          routeItems.delete.push({ url, handler });
+        },
+      };
+      const { default: fastifyResource } = await import('../../src/index');
+      // @ts-expect-error: mock fastify instance for plugin test
+      await fastifyResource(fastify, { model, resourceList: ['asset'] });
+      assert.strictEqual(routeItems.get.length, 2);
+      assert.strictEqual(routeItems.post.length, 1);
+      assert.strictEqual(routeItems.patch.length, 1);
+      assert.strictEqual(routeItems.delete.length, 1);
+    });
+  });
 });

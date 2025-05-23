@@ -8,6 +8,8 @@ import {
   ControllerAction,
   Method,
 } from './global';
+import fastifyPlugin from 'fastify-plugin';
+import { FastifyInstance as RealFastifyInstance } from 'fastify';
 
 type RouteMapParams = {
   method: Method;
@@ -38,6 +40,29 @@ function attach({ routes, fastify }: AttachParams): null {
   return null;
 }
 
+// Plugin options type
+type FastifyResourcePluginOptions = {
+  model: ModelType;
+  resourceList: ResourceOrResourcesList;
+};
+
+// Fastify plugin
+const fastifyResource = fastifyPlugin(
+  async function (fastify: RealFastifyInstance, opts: FastifyResourcePluginOptions) {
+    const { model, resourceList } = opts;
+    const service = serviceGenerator(model);
+    const controller = controllerGenerator(service);
+    const routes = resourceRoutes(resourceList, controller);
+    routes.forEach(({ method, url, handler }) => {
+      (fastify as unknown as Record<string, (url: string, handler: ControllerAction) => void>)[method](url, handler);
+    });
+  },
+  {
+    name: 'fastify-resource',
+  }
+);
+
+export default fastifyResource;
 export {
   serviceGenerator,
   controllerGenerator,

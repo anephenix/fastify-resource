@@ -18,11 +18,7 @@ function toSnakeCase(str: string): string {
 type RouteType = 'collection' | 'member';
 
 // Create the plural form of the resource name
-function generateRoutePart(
-  resource: string,
-  type: RouteType,
-  last = false
-) {
+function generateRoutePart(resource: string, type: RouteType, last = false) {
   if (type === 'collection') return `/${pluralize(resource)}`;
   return `/${pluralize(resource)}/:${
     last ? 'id' : `${toSnakeCase(resource)}_id`
@@ -52,8 +48,8 @@ function resourceRoutes(
   controller: Controller
 ): Array<Route> {
   const resourceList = Array.isArray(resourceOrResourceList)
-      ? resourceOrResourceList
-      : [resourceOrResourceList];
+    ? resourceOrResourceList
+    : [resourceOrResourceList];
   const collectionUrl = generateRoute(resourceList, 'collection');
   const memberUrl = generateRoute(resourceList, 'member');
 

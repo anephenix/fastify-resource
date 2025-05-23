@@ -1,5 +1,10 @@
 // Dependencies
-import type { Params, ModelType, ServiceResponse, ErrorOfSomeKind } from './global';
+import type {
+  Params,
+  ModelType,
+  ServiceResponse,
+  ErrorOfSomeKind,
+} from './global';
 
 // Helper functions
 

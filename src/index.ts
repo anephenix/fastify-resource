@@ -54,7 +54,12 @@ const fastifyResource = fastifyPlugin(
     const controller = controllerGenerator(service);
     const routes = resourceRoutes(resourceList, controller);
     for (const { method, url, handler } of routes) {
-      (fastify as unknown as Record<string, (url: string, handler: ControllerAction) => void>)[method](url, handler);
+      (
+        fastify as unknown as Record<
+          string,
+          (url: string, handler: ControllerAction) => void
+        >
+      )[method](url, handler);
     }
   },
   {

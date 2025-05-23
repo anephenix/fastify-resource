@@ -1,5 +1,5 @@
 // Dependencies
-import {
+import type {
   ResourcesList,
   ResourceOrResourcesList,
   Route,
@@ -21,11 +21,11 @@ type RouteType = 'collection' | 'member';
 function generateRoutePart(
   resource: string,
   type: RouteType,
-  last: boolean = false
+  last = false
 ) {
   if (type === 'collection') return `/${pluralize(resource)}`;
   return `/${pluralize(resource)}/:${
-    last ? 'id' : toSnakeCase(resource) + '_id'
+    last ? 'id' : `${toSnakeCase(resource)}_id`
   }`;
 }
 
@@ -51,8 +51,7 @@ function resourceRoutes(
   resourceOrResourceList: ResourceOrResourcesList,
   controller: Controller
 ): Array<Route> {
-  const resourceList =
-    resourceOrResourceList instanceof Array
+  const resourceList = Array.isArray(resourceOrResourceList)
       ? resourceOrResourceList
       : [resourceOrResourceList];
   const collectionUrl = generateRoute(resourceList, 'collection');

@@ -1,18 +1,16 @@
-import { FastifyRequest } from 'fastify';
+import type { FastifyRequest } from 'fastify';
 
 // NOTE - This needs adjusting
 export type Metadata = string | object;
 
 export type Params = {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  [key: string]: any;
+  [key: string]: unknown;
 };
 
 export type ServiceResponse = {
   success: boolean;
   error?: Error;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  data?: any;
+  data?: unknown;
 };
 
 export type Service = {
@@ -64,8 +62,7 @@ export type ActionServiceMappingKey = keyof ActionServiceMapping;
 
 export type HandleResponseParams = {
   success: boolean;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  data: any;
+  data: unknown;
   error?: Error;
   successCode?: StatusCode;
   rep: Reply;

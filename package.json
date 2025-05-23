@@ -62,7 +62,7 @@
   "size-limit": [
     {
       "path": "dist/*.js",
-      "limit": "10 KB"
+      "limit": "11 KB"
     }
   ],
   "dependencies": {

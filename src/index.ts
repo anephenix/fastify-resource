@@ -2,14 +2,14 @@
 import serviceGenerator from './service';
 import controllerGenerator from './controller';
 import { resourceRoutes } from './route';
-import {
+import type {
   ModelType,
   ResourceOrResourcesList,
   ControllerAction,
   Method,
 } from './global';
 import fastifyPlugin from 'fastify-plugin';
-import { FastifyInstance as RealFastifyInstance } from 'fastify';
+import type { FastifyInstance as RealFastifyInstance } from 'fastify';
 
 type RouteMapParams = {
   method: Method;
@@ -48,14 +48,14 @@ type FastifyResourcePluginOptions = {
 
 // Fastify plugin
 const fastifyResource = fastifyPlugin(
-  async function (fastify: RealFastifyInstance, opts: FastifyResourcePluginOptions) {
+  async (fastify: RealFastifyInstance, opts: FastifyResourcePluginOptions) => {
     const { model, resourceList } = opts;
     const service = serviceGenerator(model);
     const controller = controllerGenerator(service);
     const routes = resourceRoutes(resourceList, controller);
-    routes.forEach(({ method, url, handler }) => {
+    for (const { method, url, handler } of routes) {
       (fastify as unknown as Record<string, (url: string, handler: ControllerAction) => void>)[method](url, handler);
-    });
+    }
   },
   {
     name: 'fastify-resource',

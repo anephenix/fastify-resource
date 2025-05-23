@@ -18,6 +18,35 @@ npm i @anephenix/fastify-resource
 
 ## Usage
 
+### Registering as a Fastify plugin (recommended)
+
+You can now use `fastify-resource` as a Fastify plugin. This is the recommended way to add RESTful resources to your Fastify app:
+
+```javascript
+const fastify = require('fastify')({ logger: false });
+const Asset = require('./models/Asset');
+const fastifyResource = require('@anephenix/fastify-resource').default;
+
+fastify.register(fastifyResource, {
+  model: Asset,
+  resourceList: 'asset', // or ['asset'] for nested resources
+});
+```
+
+This will automatically generate and register the following RESTful routes:
+
+```
+GET       /assets
+POST      /assets
+GET       /assets/:id
+PATCH     /assets/:id
+DELETE    /assets/:id
+```
+
+You can also use an array for `resourceList` to generate nested routes.
+
+---
+
 When writing code for an API, you may find yourself generating RESTful routes
 for Objection.js models that support CRUD operations (Create/Read/Update/
 Delete).
@@ -111,10 +140,11 @@ With fastify resource, you can write this code and it will do the same thing:
 ```javascript
 const fastify = require('fastify')({ logger: false });
 const Asset = require('./models/Asset');
-const { resource, attach } = require('@anephenix/fastify-resource');
+const { resource } = require('@anephenix/fastify-resource');
 
 const { routes } = resource(Asset, 'asset');
-attach({ fastify, routes });
+// Instead of:
+// attach({ fastify, routes });
 ```
 
 The `resource` function is passed the Objection.js model as the 1st argument,
@@ -291,12 +321,13 @@ how to do that:
 const fastify = require('fastify')({ logger: false });
 const Post = require('./models/Post');
 const Comment = require('./models/Comment');
-const { resource, attach } = require('@anephenix/fastify-resource');
+const { resource } = require('@anephenix/fastify-resource');
 
 const postResource = resource(Post, 'post');
 const commentResource = resource(Comment, ['post', 'comment']);
-attach({ fastify, routes: postResource.routes });
-attach({ fastify, routes: commentResource.routes });
+// Instead of:
+// attach({ fastify, routes: postResource.routes });
+// attach({ fastify, routes: commentResource.routes });
 ```
 
 This will make the following API routes available on the fastify instance:
@@ -336,6 +367,7 @@ const {
   serviceGenerator,
   controllerGenerator,
   resourceRoutes,
+  resource,
 } = require('@anephenix/fastify-resource');
 ```
 

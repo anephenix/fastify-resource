@@ -1,5 +1,5 @@
-import { strict as assert } from 'assert';
-import { ControllerAction, RouteParams } from '../../src/global';
+import { strict as assert } from 'node:assert';
+import type { ControllerAction, RouteParams } from '../../src/global';
 import {
   serviceGenerator,
   controllerGenerator,
@@ -7,7 +7,7 @@ import {
   resource,
   attach,
 } from '../../src/index';
-import { model } from '../helpers/model';
+import Person from '../helpers/test_app/models/Person';
 
 describe('index', () => {
   describe('should export the main functions', () => {
@@ -24,34 +24,34 @@ describe('index', () => {
 
   describe('#resource', () => {
     it('should generate the service, controller and resource routes from the model and resource list', () => {
-      const resourceList = ['asset'];
-      const { service, controller, routes } = resource(model, resourceList);
+      const resourceList = ['person'];
+      const { service, controller, routes } = resource(Person, resourceList);
       assert.ok(service);
       assert.ok(controller);
       assert.ok(routes);
       assert.deepStrictEqual(routes[0], {
         method: 'get',
-        url: '/assets',
+        url: '/people',
         handler: controller.index,
       });
       assert.deepStrictEqual(routes[1], {
         method: 'post',
-        url: '/assets',
+        url: '/people',
         handler: controller.create,
       });
       assert.deepStrictEqual(routes[2], {
         method: 'get',
-        url: '/assets/:id',
+        url: '/people/:id',
         handler: controller.get,
       });
       assert.deepStrictEqual(routes[3], {
         method: 'patch',
-        url: '/assets/:id',
+        url: '/people/:id',
         handler: controller.update,
       });
       assert.deepStrictEqual(routes[4], {
         method: 'delete',
-        url: '/assets/:id',
+        url: '/people/:id',
         handler: controller.delete,
       });
     });
@@ -59,8 +59,8 @@ describe('index', () => {
 
   describe('#attach', () => {
     it('should attach the routes to the fastify app', () => {
-      const resourceList = ['asset'];
-      const { routes, controller } = resource(model, resourceList);
+      const resourceList = ['people'];
+      const { routes, controller } = resource(Person, resourceList);
       const routeItems = {
         get: [] as Array<RouteParams>,
         post: [] as Array<RouteParams>,
@@ -86,15 +86,15 @@ describe('index', () => {
       assert.strictEqual(routeItems.post.length, 1);
       assert.strictEqual(routeItems.patch.length, 1);
       assert.strictEqual(routeItems.delete.length, 1);
-      assert.strictEqual(routeItems.get[0].url, '/assets');
+      assert.strictEqual(routeItems.get[0].url, '/people');
       assert.deepStrictEqual(routeItems.get[0].handler, controller.index);
-      assert.strictEqual(routeItems.get[1].url, '/assets/:id');
+      assert.strictEqual(routeItems.get[1].url, '/people/:id');
       assert.deepStrictEqual(routeItems.get[1].handler, controller.get);
-      assert.strictEqual(routeItems.post[0].url, '/assets');
+      assert.strictEqual(routeItems.post[0].url, '/people');
       assert.deepStrictEqual(routeItems.post[0].handler, controller.create);
-      assert.strictEqual(routeItems.patch[0].url, '/assets/:id');
+      assert.strictEqual(routeItems.patch[0].url, '/people/:id');
       assert.deepStrictEqual(routeItems.patch[0].handler, controller.update);
-      assert.strictEqual(routeItems.delete[0].url, '/assets/:id');
+      assert.strictEqual(routeItems.delete[0].url, '/people/:id');
       assert.deepStrictEqual(routeItems.delete[0].handler, controller.delete);
     });
   });
@@ -123,7 +123,10 @@ describe('index', () => {
       };
       const { default: fastifyResource } = await import('../../src/index');
       // @ts-expect-error: mock fastify instance for plugin test
-      await fastifyResource(fastify, { model, resourceList: ['asset'] });
+      await fastifyResource(fastify, {
+        model: Person,
+        resourceList: ['people'],
+      });
       assert.strictEqual(routeItems.get.length, 2);
       assert.strictEqual(routeItems.post.length, 1);
       assert.strictEqual(routeItems.patch.length, 1);

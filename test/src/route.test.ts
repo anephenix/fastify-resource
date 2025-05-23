@@ -3,7 +3,7 @@ import {
   generateRoutePart,
   generateRoute,
 } from '../../src/route';
-import assert from 'assert';
+import assert from 'node:assert';
 
 describe('route', () => {
   describe('#resourceRoutes', () => {

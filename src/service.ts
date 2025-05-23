@@ -23,16 +23,20 @@ const modelAction = async (
     case 'getAll':
       return await model.query().where(params);
     case 'get':
-      return await model.query().where(params); //.first();
+      return await model.query().where(params).first();
     case 'create':
       return await model.query().insert(params);
     case 'update':
       return await model
         .query()
         .patchAndFetchById(params.id, objectWithoutKey(params, 'id'));
-    case 'delete':
-      await model.query().deleteById(params.id);
+    case 'delete': {
+      const deletedCount = await model.query().deleteById(params.id);
+      if (deletedCount === 0) {
+        throw new Error(`Record with id ${params.id} not found`);
+      }
       return params.id;
+    }
   }
 };
 

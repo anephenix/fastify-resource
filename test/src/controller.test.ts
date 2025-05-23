@@ -1,4 +1,4 @@
-import {
+import type {
   Service,
   Params,
   Request,
@@ -7,8 +7,8 @@ import {
   GenerateServiceParams,
 } from '../../src/global';
 import controller from '../../src/controller';
-import assert from 'assert';
-import { FastifyRequest } from 'fastify';
+import assert from 'node:assert';
+import type { FastifyRequest } from 'fastify';
 
 const func = async (params: Params): Promise<ServiceResponse> => {
   return {
@@ -46,7 +46,8 @@ describe('controller', () => {
   });
 
   describe('controller.index', () => {
-    let request: Request, reply: Reply;
+    let request: Request;
+    let reply: Reply;
 
     beforeEach(() => {
       request = { params: {} } as FastifyRequest;
@@ -97,7 +98,8 @@ describe('controller', () => {
   });
 
   describe('controller.create', () => {
-    let request: Request, reply: Reply;
+    let request: Request;
+    let reply: Reply;
 
     beforeEach(() => {
       request = {
@@ -149,7 +151,8 @@ describe('controller', () => {
   });
 
   describe('controller.get', () => {
-    let request: Request, reply: Reply;
+    let request: Request;
+    let reply: Reply;
 
     beforeEach(() => {
       request = { params: { id: '42' } } as FastifyRequest;
@@ -199,7 +202,8 @@ describe('controller', () => {
   });
 
   describe('controller.update', () => {
-    let request: Request, reply: Reply;
+    let request: Request;
+    let reply: Reply;
 
     beforeEach(() => {
       request = {
@@ -252,7 +256,8 @@ describe('controller', () => {
   });
 
   describe('controller.delete', () => {
-    let request: Request, reply: Reply;
+    let request: Request;
+    let reply: Reply;
 
     beforeEach(() => {
       request = { params: { id: '42' } } as FastifyRequest;

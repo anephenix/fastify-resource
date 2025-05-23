@@ -1,5 +1,47 @@
 # CHANGELOG
 ### 0.0.2 - Thursday 16th January, 2025
+### 0.0.6 - Friday 23rd May, 2025
+
+- Merge pull request #84 from anephenix/feature/use-fastifys-plugin-architecture
+- Got E2E tests in and some fixes as well
+- Some prettier changes missed out
+- Linting fixes, fix for publish workflow and bumped size limit to 11kb
+- Updated README
+- feat: migrate to Fastify plugin architecture and add plugin test
+- Merge pull request #82 from anephenix/dependabot/npm_and_yarn/fastify-5.3.3
+- Merge pull request #80 from anephenix/dependabot/npm_and_yarn/mocha-11.4.0
+- Merge pull request #79 from anephenix/dependabot/npm_and_yarn/eslint-9.27.0
+- Bump fastify from 5.3.2 to 5.3.3
+- Bump mocha from 11.2.2 to 11.4.0
+- Bump eslint from 9.26.0 to 9.27.0
+- Merge pull request #78 from anephenix/dependabot/npm_and_yarn/typescript-eslint-8.32.1
+- Merge pull request #77 from anephenix/dependabot/npm_and_yarn/globals-16.1.0
+- Bump typescript-eslint from 8.32.0 to 8.32.1
+- Bump globals from 16.0.0 to 16.1.0
+- Merge pull request #76 from anephenix/dependabot/npm_and_yarn/eslint-9.26.0
+- Bump eslint from 9.25.1 to 9.26.0
+- Merge pull request #75 from anephenix/dependabot/npm_and_yarn/mocha-11.2.2
+- Merge pull request #74 from anephenix/dependabot/npm_and_yarn/typescript-eslint-8.32.0
+- Merge pull request #73 from anephenix/dependabot/npm_and_yarn/eslint/js-9.26.0
+- Bump mocha from 11.1.0 to 11.2.2
+- Bump typescript-eslint from 8.31.1 to 8.32.0
+- Bump @eslint/js from 9.25.1 to 9.26.0
+- Merge pull request #72 from anephenix/dependabot/npm_and_yarn/typescript-eslint-8.31.1
+- Bump typescript-eslint from 8.31.0 to 8.31.1
+- Merge pull request #71 from anephenix/dependabot/npm_and_yarn/eslint-9.25.1
+- Bump eslint from 9.24.0 to 9.25.1
+- Merge pull request #70 from anephenix/dependabot/npm_and_yarn/typescript-eslint-8.31.0
+- Merge pull request #69 from anephenix/dependabot/npm_and_yarn/eslint/js-9.25.1
+- Bump typescript-eslint from 8.30.0 to 8.31.0
+- Bump @eslint/js from 9.24.0 to 9.25.1
+- Merge pull request #68 from anephenix/dependabot/npm_and_yarn/fastify-5.3.2
+- Bump fastify from 5.3.0 to 5.3.2
+- Updated GitHub action to use setup-node@v4
+- Merge pull request #65 from anephenix/dependabot/npm_and_yarn/fastify-5.3.0
+- Merge pull request #66 from anephenix/dependabot/npm_and_yarn/typescript-eslint-8.30.0
+- Bump typescript-eslint from 8.29.0 to 8.30.0
+- Bump fastify from 5.2.2 to 5.3.0
+
 ### 0.0.5 - Tuesday 8th April, 2025
 
 - Updated dependencies

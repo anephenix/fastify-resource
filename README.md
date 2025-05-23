@@ -149,7 +149,8 @@ const app = fastify({ logger: false });
 app.register(fastifyResource, {
   model: Post,
   resourceList: ['post', 'comment'],
-});```
+});
+```
 
 This will make the following API routes available on the fastify instance:
 

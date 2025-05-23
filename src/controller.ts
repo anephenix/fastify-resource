@@ -5,7 +5,7 @@
 */
 
 // Dependencies
-import {
+import type {
   Service,
   ServiceKey,
   ActionServiceMapping,
@@ -30,12 +30,7 @@ import {
 	- 500 for internal server error
 */
 const getCodeForError = (error: Error): StatusCode => {
-  switch (error.message) {
-    case 'Not found':
-      return 404;
-    default:
-      return 400;
-  }
+  return error.message === 'Not found' ? 404 : 400;
 };
 
 /*
@@ -66,9 +61,8 @@ const handleResponse = ({
   if (error) {
     rep.code(getCodeForError(error));
     return error.message;
-  } else {
-    return 'No error provided';
   }
+  return 'No error provided';
 };
 
 /*

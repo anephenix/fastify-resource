@@ -18,6 +18,35 @@ npm i @anephenix/fastify-resource
 
 ## Usage
 
+### Registering as a Fastify plugin (recommended)
+
+You can now use `fastify-resource` as a Fastify plugin. This is the recommended way to add RESTful resources to your Fastify app:
+
+```javascript
+const fastify = require('fastify')({ logger: false });
+const Person = require('./models/Person');
+const fastifyResource = require('@anephenix/fastify-resource').default;
+
+fastify.register(fastifyResource, {
+  model: Person,
+  resourceList: 'person',
+});
+```
+
+This will automatically generate and register the following RESTful routes:
+
+```
+GET       /people
+POST      /people
+GET       /people/:id
+PATCH     /people/:id
+DELETE    /people/:id
+```
+
+You can also use an array for `resourceList` to generate nested routes.
+
+---
+
 When writing code for an API, you may find yourself generating RESTful routes
 for Objection.js models that support CRUD operations (Create/Read/Update/
 Delete).
@@ -30,12 +59,12 @@ for CRUD like this:
 
 ```javascript
 const fastify = require('fastify')({ logger: false });
-const Asset = require('./models/Asset');
+const Person = require('./models/Person');
 
-// GET /assets
-fastify.get('/assets', async (req, rep) => {
+// GET /people
+fastify.get('/people', async (req, rep) => {
   try {
-    const data = await Asset.query();
+    const data = await Person.query();
     return data;
   } catch (error) {
     rep.statusCode(400);
@@ -43,24 +72,24 @@ fastify.get('/assets', async (req, rep) => {
   }
 });
 
-// POST /assets
-fastify.post('/assets', async (req, rep) => {
+// POST /people
+fastify.post('/people', async (req, rep) => {
   try {
-    const assets = await Asset.query().insert(req.body);
+    const people = await Person.query().insert(req.body);
     rep.statusCode(201);
-    return assets;
+    return people;
   } catch (error) {
     rep.statusCode(400);
     return error.message;
   }
 });
 
-// GET /assets/:id
-fastify.get('/assets/:id', async (req, rep) => {
+// GET /people/:id
+fastify.get('/people/:id', async (req, rep) => {
   try {
-    const asset = await Asset.query().findById(req.params.id);
-    if (asset) return asset;
-    if (!asset) {
+    const person = await Person.query().findById(req.params.id);
+    if (person) return person;
+    if (!person) {
       res.statusCode(404);
       return 'Not found';
     }
@@ -70,15 +99,15 @@ fastify.get('/assets/:id', async (req, rep) => {
   }
 });
 
-// PATCH /assets/:id
-fastify.patch('/assets/:id', async (req, rep) => {
+// PATCH /people/:id
+fastify.patch('/people/:id', async (req, rep) => {
   try {
-    const asset = await Asset.query().patchAndFetchById(
+    const person = await Person.query().patchAndFetchById(
       req.params.id,
       req.body
     );
-    if (asset) return asset;
-    if (!asset) {
+    if (person) return person;
+    if (!person) {
       res.statusCode(404);
       return 'Not found';
     }
@@ -88,10 +117,10 @@ fastify.patch('/assets/:id', async (req, rep) => {
   }
 });
 
-// DELETE /assets/:id
-fastify.delete('/assets/:id', async (req, rep) => {
+// DELETE /people/:id
+fastify.delete('/people/:id', async (req, rep) => {
   try {
-    await Asset.query().deleteById(req.params.id);
+    await Person.query().deleteById(req.params.id);
     return req.params.id;
   } catch (error) {
     rep.statusCode(400);
@@ -110,11 +139,12 @@ With fastify resource, you can write this code and it will do the same thing:
 
 ```javascript
 const fastify = require('fastify')({ logger: false });
-const Asset = require('./models/Asset');
-const { resource, attach } = require('@anephenix/fastify-resource');
+const Person = require('./models/Person');
+const { resource } = require('@anephenix/fastify-resource');
 
-const { routes } = resource(Asset, 'asset');
-attach({ fastify, routes });
+const { routes } = resource(Person, 'person');
+// Instead of:
+// attach({ fastify, routes });
 ```
 
 The `resource` function is passed the Objection.js model as the 1st argument,
@@ -126,11 +156,11 @@ This will do the following:
 - Define a list of 5 API RESTful routes that cover CRUD functions:
 
 ```
-GET       /assets
-POST      /assets
-GET       /assets/:id
-PATCH     /assets/:id
-DELETE    /assets/:id
+GET       /people
+POST      /people
+GET       /people/:id
+PATCH     /people/:id
+DELETE    /people/:id
 ```
 
 - It will create the controller actions that support those API routes
@@ -156,11 +186,11 @@ something like this:
 
 ```typescript
 [
-  { method: 'get', url: '/assets', handler: Function },
-  { method: 'post', url: '/assets', handler: Function },
-  { method: 'get', url: '/assets/:id', handler: Function },
-  { method: 'patch', url: '/assets/:id', handler: Function },
-  { method: 'delete', url: '/assets/:id', handler: Function },
+  { method: 'get', url: '/people', handler: Function },
+  { method: 'post', url: '/people', handler: Function },
+  { method: 'get', url: '/people/:id', handler: Function },
+  { method: 'patch', url: '/people/:id', handler: Function },
+  { method: 'delete', url: '/people/:id', handler: Function },
 ];
 ```
 
@@ -171,7 +201,7 @@ the API route is called. The controller is accessible from the `resource`
 function call:
 
 ```javascript
-const { routes, controller, service } = resource(Asset, 'asset');
+const { routes, controller, service } = resource(Person, 'person');
 ```
 
 The generated controller code looks like this:
@@ -291,12 +321,13 @@ how to do that:
 const fastify = require('fastify')({ logger: false });
 const Post = require('./models/Post');
 const Comment = require('./models/Comment');
-const { resource, attach } = require('@anephenix/fastify-resource');
+const { resource } = require('@anephenix/fastify-resource');
 
 const postResource = resource(Post, 'post');
 const commentResource = resource(Comment, ['post', 'comment']);
-attach({ fastify, routes: postResource.routes });
-attach({ fastify, routes: commentResource.routes });
+// Instead of:
+// attach({ fastify, routes: postResource.routes });
+// attach({ fastify, routes: commentResource.routes });
 ```
 
 This will make the following API routes available on the fastify instance:
@@ -336,6 +367,7 @@ const {
   serviceGenerator,
   controllerGenerator,
   resourceRoutes,
+  resource,
 } = require('@anephenix/fastify-resource');
 ```
 

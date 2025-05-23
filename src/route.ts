@@ -1,5 +1,5 @@
 // Dependencies
-import {
+import type {
   ResourcesList,
   ResourceOrResourcesList,
   Route,
@@ -18,14 +18,10 @@ function toSnakeCase(str: string): string {
 type RouteType = 'collection' | 'member';
 
 // Create the plural form of the resource name
-function generateRoutePart(
-  resource: string,
-  type: RouteType,
-  last: boolean = false
-) {
+function generateRoutePart(resource: string, type: RouteType, last = false) {
   if (type === 'collection') return `/${pluralize(resource)}`;
   return `/${pluralize(resource)}/:${
-    last ? 'id' : toSnakeCase(resource) + '_id'
+    last ? 'id' : `${toSnakeCase(resource)}_id`
   }`;
 }
 
@@ -51,10 +47,9 @@ function resourceRoutes(
   resourceOrResourceList: ResourceOrResourcesList,
   controller: Controller
 ): Array<Route> {
-  const resourceList =
-    resourceOrResourceList instanceof Array
-      ? resourceOrResourceList
-      : [resourceOrResourceList];
+  const resourceList = Array.isArray(resourceOrResourceList)
+    ? resourceOrResourceList
+    : [resourceOrResourceList];
   const collectionUrl = generateRoute(resourceList, 'collection');
   const memberUrl = generateRoute(resourceList, 'member');
 

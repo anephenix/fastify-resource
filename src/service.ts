@@ -1,5 +1,10 @@
 // Dependencies
-import { Params, ModelType, ServiceResponse, ErrorOfSomeKind } from './global';
+import type {
+  Params,
+  ModelType,
+  ServiceResponse,
+  ErrorOfSomeKind,
+} from './global';
 
 // Helper functions
 
@@ -18,27 +23,31 @@ const modelAction = async (
     case 'getAll':
       return await model.query().where(params);
     case 'get':
-      return await model.query().where(params); //.first();
+      return await model.query().where(params).first();
     case 'create':
       return await model.query().insert(params);
     case 'update':
       return await model
         .query()
         .patchAndFetchById(params.id, objectWithoutKey(params, 'id'));
-    case 'delete':
-      await model.query().deleteById(params.id);
+    case 'delete': {
+      const deletedCount = await model.query().deleteById(params.id);
+      if (deletedCount === 0) {
+        throw new Error(`Record with id ${params.id} not found`);
+      }
       return params.id;
+    }
   }
 };
 
 const handleError = (error: ErrorOfSomeKind) => {
   if (error instanceof Error) {
     return { success: false, error };
-  } else if (typeof error === 'string') {
-    return { success: false, error: new Error(error) };
-  } else {
-    return { success: false, error: new Error('No error provided') };
   }
+  if (typeof error === 'string') {
+    return { success: false, error: new Error(error) };
+  }
+  return { success: false, error: new Error('No error provided') };
 };
 
 const serviceFunction = (action: string, model: ModelType) => {

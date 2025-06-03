@@ -1,4 +1,7 @@
 name: Publish to npm
+permissions:
+    contents: read # Required for actions/checkout to read the repository
+    id-token: write # Optional, for OIDC-based authentication if using cloud services
 
 on:
   push:

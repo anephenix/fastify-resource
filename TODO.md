@@ -12,10 +12,10 @@
 - [x] CodeClimate quality badge
 - [x] CodeClimate coverage badge
 - [x] Version number badge
+- [x] An E2E test that verifies the use case outlined in the README.md file.
 
 ## Next
 
-- [ ] An E2E test that verifies the use case outlined in the README.md file.
 - [ ] Workout strategy for supporting request headers (e.g. bearer-token for authentication/authorization)
 
 - [ ] Workout strategy for supporting preHandlers in fastify

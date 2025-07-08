@@ -14,7 +14,7 @@
     "prettier": "prettier src test --write",
     "publish-patch-release": "npm run prepare-patch-release && git push origin main && git push --tags",
     "size": "size-limit",
-    "test": "cross-env NODE_ENV=test npx mocha --require ts-node/register --extensions ts,tsx test/src/* --test",
+    "test": "cross-env NODE_ENV=test mocha --require ts-node/register --extensions ts,tsx \"test/src/**/*.test.ts\"",
     "test:e2e": "cross-env NODE_ENV=test npx mocha --require ts-node/register --extensions ts,tsx test/e2e/integration.test.ts --test",
     "update-changelog": "npx ts-node scripts/update-changelog.ts",
     "watch": "tsc --project tsconfig.json --watch"
@@ -31,6 +31,7 @@
     "dist",
     "src"
   ],
+  "type": "commonjs",
   "engines": {
     "node": ">=12"
   },

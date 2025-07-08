@@ -14,6 +14,19 @@ const objectWithoutKey = (object: Record<string, unknown>, key: string) => {
   return otherKeys;
 };
 
+/* 
+  NOTE:
+
+  I think that this needs to understand if the resource is an objection.js model or a relation
+  and then adjust the query accordingly.
+
+  In fact, it will need to in the context of Objection.js models.
+
+  https://vincit.github.io/objection.js/guide/query-examples.html#relation-insert-queries
+
+  At the moment, parent models are passed in as a parameter - e.g. parent_id.
+
+*/
 const modelAction = async (
   action: string,
   model: ModelType,

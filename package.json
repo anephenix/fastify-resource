@@ -5,15 +5,14 @@
   "description": "A way for generating resources using fastify and objection",
   "scripts": {
     "analyze": "size-limit --why",
-    "start": "tsdx watch --target node",
     "build": "tsc --project tsconfig.json",
     "cover": "cross-env NODE_ENV=test npx vitest test --run --coverage",
-    "lint": "npx @biomejs/biome check --write src test",
+    "lint": "npx @biomejs/biome check --write src test scripts",
     "prepare-patch-release": "npm run update-changelog && git add CHANGELOG.md && git commit -m \"Updated changelog\" && npm version patch",
     "publish-patch-release": "npm run prepare-patch-release && git push origin main && git push --tags",
     "size": "size-limit",
     "test": "cross-env NODE_ENV=test npx vitest test --run",
-    "update-changelog": "npx ts-node scripts/update-changelog.ts",
+    "update-changelog": "node --experimental-strip-types scripts/update-changelog.ts",
     "watch": "tsc --project tsconfig.json --watch"
   },
   "keywords": [
@@ -28,7 +27,7 @@
     "dist",
     "src"
   ],
-  "type": "commonjs",
+  "type": "module",
   "engines": {
     "node": ">=12"
   },
@@ -46,7 +45,6 @@
     "objection": "^3.1.5",
     "size-limit": "^11.1.5",
     "sqlite3": "^5.1.7",
-    "ts-node": "^10.9.2",
     "typescript": "^5.7.2",
     "vitest": "^3.2.4"
   },

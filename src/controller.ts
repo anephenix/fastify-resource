@@ -6,17 +6,17 @@
 
 // Dependencies
 import type {
-  Service,
-  ServiceKey,
-  ActionServiceMapping,
-  Request,
-  Reply,
-  StatusCode,
-  Controller,
-  HandleResponseParams,
-  ActionServiceMappingKey,
-  Params,
-} from './global';
+	ActionServiceMapping,
+	ActionServiceMappingKey,
+	Controller,
+	HandleResponseParams,
+	Params,
+	Reply,
+	Request,
+	Service,
+	ServiceKey,
+	StatusCode,
+} from "./global";
 
 /*
   This function looks at the error object and returns the correct HTTP status 
@@ -30,7 +30,7 @@ import type {
 	- 500 for internal server error
 */
 const getCodeForError = (error: Error): StatusCode => {
-  return error.message === 'Not found' ? 404 : 400;
+	return error.message === "Not found" ? 404 : 400;
 };
 
 /*
@@ -38,31 +38,31 @@ const getCodeForError = (error: Error): StatusCode => {
   It also sets the HTTP status code if a successCode is provided..
 */
 const handleSuccessfulResponse = ({
-  data,
-  successCode,
-  rep,
+	data,
+	successCode,
+	rep,
 }: HandleResponseParams) => {
-  if (successCode) rep.code(successCode);
-  return data;
+	if (successCode) rep.code(successCode);
+	return data;
 };
 
 /*
   This handles the response for the controller action. 
 */
 const handleResponse = ({
-  success,
-  data,
-  error,
-  successCode,
-  rep,
+	success,
+	data,
+	error,
+	successCode,
+	rep,
 }: HandleResponseParams) => {
-  if (success)
-    return handleSuccessfulResponse({ success, data, successCode, rep });
-  if (error) {
-    rep.code(getCodeForError(error));
-    return error.message;
-  }
-  return 'No error provided';
+	if (success)
+		return handleSuccessfulResponse({ success, data, successCode, rep });
+	if (error) {
+		rep.code(getCodeForError(error));
+		return error.message;
+	}
+	return "No error provided";
 };
 
 /*
@@ -71,11 +71,11 @@ const handleResponse = ({
   and getting them to call their respective service functions.  
 */
 const actionServiceMapping: ActionServiceMapping = {
-  index: 'getAll',
-  create: 'create',
-  get: 'get',
-  update: 'update',
-  delete: 'delete',
+	index: "getAll",
+	create: "create",
+	get: "get",
+	update: "update",
+	delete: "delete",
 };
 
 /*
@@ -113,11 +113,11 @@ const actionServiceMapping: ActionServiceMapping = {
   request body so that they can be passed alltogether to the service function.
 */
 const getParams = (action: ActionServiceMappingKey, req: Request) => {
-  const actionsWithBody = ['create', 'update'];
-  if (actionsWithBody.includes(action)) {
-    return Object.assign({}, req.params, req.body);
-  }
-  return req.params;
+	const actionsWithBody = ["create", "update"];
+	if (actionsWithBody.includes(action)) {
+		return Object.assign({}, req.params, req.body);
+	}
+	return req.params;
 };
 
 /*
@@ -127,43 +127,43 @@ const getParams = (action: ActionServiceMappingKey, req: Request) => {
   is the correct HTTP Status Code for a creative RESTful API action.
 */
 const getResponseData = (
-  action: ActionServiceMappingKey,
-  { success, data, error, rep }: HandleResponseParams
+	action: ActionServiceMappingKey,
+	{ success, data, error, rep }: HandleResponseParams,
 ): HandleResponseParams => {
-  if (action === 'create') {
-    return { success, data, error, rep, successCode: 201 };
-  }
-  return { success, data, error, rep };
+	if (action === "create") {
+		return { success, data, error, rep, successCode: 201 };
+	}
+	return { success, data, error, rep };
 };
 
 /*
   This function generates the controller action for the service method.
 */
 const generateAction = (action: ActionServiceMappingKey, service: Service) => {
-  return async (req: Request, rep: Reply) => {
-    // Note - if we know what the service and action is, perhaps we can lookup a schema for the data that the service function expects
-    // We then need a way to work out where that data would come from in a request object, such as the body, query, params, headers etc
-    const params = getParams(action, req) as Params;
-    const method: ServiceKey = actionServiceMapping[action];
-    const { success, data, error } = await service[method](params);
-    const responseData = getResponseData(action, { success, data, error, rep });
-    return handleResponse(responseData);
-  };
+	return async (req: Request, rep: Reply) => {
+		// Note - if we know what the service and action is, perhaps we can lookup a schema for the data that the service function expects
+		// We then need a way to work out where that data would come from in a request object, such as the body, query, params, headers etc
+		const params = getParams(action, req) as Params;
+		const method: ServiceKey = actionServiceMapping[action];
+		const { success, data, error } = await service[method](params);
+		const responseData = getResponseData(action, { success, data, error, rep });
+		return handleResponse(responseData);
+	};
 };
 
 /*
   This function generates the controller for the service.
 */
 const controllerGenerator = (service: Service): Controller => {
-  const actions = Object.keys(
-    actionServiceMapping
-  ) as ActionServiceMappingKey[];
-  const actionSetup = (action: ActionServiceMappingKey) => {
-    return [action, generateAction(action, service)];
-  };
-  const array = actions.map(actionSetup);
-  const controller: Controller = Object.fromEntries(array);
-  return controller;
+	const actions = Object.keys(
+		actionServiceMapping,
+	) as ActionServiceMappingKey[];
+	const actionSetup = (action: ActionServiceMappingKey) => {
+		return [action, generateAction(action, service)];
+	};
+	const array = actions.map(actionSetup);
+	const controller: Controller = Object.fromEntries(array);
+	return controller;
 };
 
 export default controllerGenerator;

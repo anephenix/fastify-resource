@@ -1,33 +1,33 @@
-import fastify from 'fastify';
-import fastifyResource from '../../../src/index';
-import Person from './models/Person';
-import Possession from './models/Possession';
+import fastify from "fastify";
+import fastifyResource from "../../../src/index";
+import Person from "./models/Person";
+import Possession from "./models/Possession";
 
 const app = fastify({ logger: false });
 
 app.register(fastifyResource, {
-  model: Person,
-  resourceList: 'person',
+	model: Person,
+	resourceList: "person",
 });
 
 app.register(fastifyResource, {
-  model: Possession,
-  resourceList: 'possession',
+	model: Possession,
+	resourceList: "possession",
 });
 
 app.register(fastifyResource, {
-  model: Possession,
-  resourceList: ['person', 'possession'],
+	model: Possession,
+	resourceList: ["person", "possession"],
 });
 
 // Let's figure out what is needed for creating a resource based on the relation mapping rather than another model
 const enableNestedSelfReferentialExample = true;
 if (enableNestedSelfReferentialExample) {
-  app.register(fastifyResource, {
-    model: Person,
-    // Maybe a resourceToModel map is needed here - { person: {model Person}, children: {model: Person, from: '', to: ''} } - which helps to demystify it
-    // How does the resourceList work with relations rather than assuming an existing model exists?
-    /*
+	app.register(fastifyResource, {
+		model: Person,
+		// Maybe a resourceToModel map is needed here - { person: {model Person}, children: {model: Person, from: '', to: ''} } - which helps to demystify it
+		// How does the resourceList work with relations rather than assuming an existing model exists?
+		/*
       Hang on, if the next nested resource is not the singular name of the 
       next resource, then we can determine that the resource could be a 
       relation instead, and look at that. 
@@ -44,14 +44,14 @@ if (enableNestedSelfReferentialExample) {
       - This could be for database schemas that have different kinds of table naming conventions
       
     */
-    resourceList: ['person', 'children'],
-  });
+		resourceList: ["person", "children"],
+	});
 }
 
 // Declare a route
-app.get('/', (request, reply) => {
-  request.log.info('Hello world');
-  reply.send({ hello: 'world' });
+app.get("/", (request, reply) => {
+	request.log.info("Hello world");
+	reply.send({ hello: "world" });
 });
 
 // could handle listen and shutdown event elsewhere

@@ -3,12 +3,12 @@
 */
 
 // Dependencies
-import { deleteDatabase } from '../teardownDatabase.ts';
+import { deleteDatabase } from "../teardownDatabase.ts";
 
 deleteDatabase()
-  .then(() => {
-    console.log('Database deletion complete');
-  })
-  .catch((error) => {
-    console.error('Error during database deletion:', error);
-  });
+	.then(() => {
+		console.log("Database deletion complete");
+	})
+	.catch((error) => {
+		console.error("Error during database deletion:", error);
+	});

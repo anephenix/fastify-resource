@@ -1,15 +1,15 @@
-import { Model } from 'objection';
-import { unitTestDB } from '../../knexConnections';
+import { Model } from "objection";
+import { unitTestDB } from "../../knexConnections";
 
 Model.knex(unitTestDB);
 
 // Person model
 class Employee extends Model {
-  name: unknown;
+	name: unknown;
 
-  static get tableName() {
-    return 'employees';
-  }
+	static get tableName() {
+		return "employees";
+	}
 }
 
 export default Employee;

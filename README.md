@@ -175,7 +175,6 @@ to any number (we just showed 2 resources in order to demonstrate the example).
 
 ```shell
 npm t
-npm run test:e2e
 ```
 
 ### License and Credits

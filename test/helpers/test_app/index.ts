@@ -42,9 +42,53 @@ if (enableNestedSelfReferentialExample) {
       - We would need to write some unit tests to verify this behaviour
       - We would also need to look at how to handle cases where the model/resource name match, and the relation mapping matches are not found - thus requiring details configuration settings  
       - This could be for database schemas that have different kinds of table naming conventions
+
+	  Also, how would it work for 3 levels of nesting?
+	  And how would it know the fields for mapping
+	  - It feels like the config for the service generator needs to be able to contain this information so that it can perform the correct queries,
+		as it currently works on the assumption that the model is the same as the resource name and that a specific pattern is used for the fields. 
+
+
+	// Let's use an estate agent's property listing as an example
+	
+	- estateAgent
+		- properties
+			- property
+				- rooms
+					- room
+
+	/estate-agents/:estateAgentId/properties/:propertyId/rooms/:roomId
+
+	EstateAgent / Property / Room
+
+	- Room belongs to Property
+	- Property belongs to EstateAgent
+
+	How would an Objection.js model query look like for this?
+
+	Database schema:
+
+	- estate_agents
+		- id
+		- name
+
+	- properties
+		- id
+		- estate_agent_id
+		- address
+	- rooms
+		- id
+		- property_id
+		- name
       
     */
-		resourceList: ["person", "children"],
+		resourceList: ["person", "child"],
+
+		// newConfigOptions: [
+		// 	{ resource: "person", model: Person, from: '', to: '' },
+		// 	{ resource: "child", model: Person, from: 'persons.id', to: 'persons.parent_id' }
+		// 	// It is not just the query for the model, it is also the
+		// ]
 	});
 }
 

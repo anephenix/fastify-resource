@@ -16,8 +16,8 @@
 
 ## Next
 
+- [ ] Implement support for self-referential models in nested resources
 - [ ] Workout strategy for supporting request headers (e.g. bearer-token for authentication/authorization)
-
 - [ ] Workout strategy for supporting preHandlers in fastify
 - [ ] Workout strategy for supporting schema validation in fastify
 - [ ] Workout strategy for custom API routes and controller/service actions to support that

@@ -5,6 +5,7 @@ import fastifyPlugin from "fastify-plugin";
 import controllerGenerator from "./controller";
 import type {
 	ControllerAction,
+	FastifyResourcePluginOptions,
 	Method,
 	ModelType,
 	ResourceOrResourcesList,
@@ -41,12 +42,6 @@ function attach({ routes, fastify }: AttachParams): null {
 	return null;
 }
 
-// Plugin options type
-type FastifyResourcePluginOptions = {
-	model: ModelType;
-	resourceList: ResourceOrResourcesList;
-};
-
 // Fastify plugin
 const fastifyResource = fastifyPlugin(
 	async (fastify: RealFastifyInstance, opts: FastifyResourcePluginOptions) => {
@@ -60,8 +55,8 @@ const fastifyResource = fastifyPlugin(
       Perhaps it needs to find a way to read the relation mapping of each model
       and then create the routes accordingly. 
     */
-		const { model, resourceList } = opts;
-		const service = serviceGenerator(model);
+		const { model, resourceList, serviceOptions } = opts;
+		const service = serviceGenerator(model, serviceOptions);
 		const controller = controllerGenerator(service);
 		const routes = resourceRoutes(resourceList, controller);
 		for (const { method, url, handler } of routes) {

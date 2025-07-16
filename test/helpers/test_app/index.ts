@@ -1,5 +1,6 @@
 import fastify from "fastify";
 import fastifyResource from "../../../src/index";
+import { objectWithoutKey } from "../../../src/utils";
 import Person from "./models/Person";
 import Possession from "./models/Possession";
 
@@ -83,12 +84,52 @@ if (enableNestedSelfReferentialExample) {
       
     */
 		resourceList: ["person", "child"],
+		serviceOptions: {
+			customModelAction: async (action, model, params) => {
+				const relatedQuery = "children";
+				const primaryKey = "person_id";
+				const primaryId = params[primaryKey];
+				const paramsToInsert = objectWithoutKey(params, primaryKey);
+				const paramsToUpdate = objectWithoutKey(
+					objectWithoutKey(params, "id"),
+					primaryKey,
+				);
 
-		// newConfigOptions: [
-		// 	{ resource: "person", model: Person, from: '', to: '' },
-		// 	{ resource: "child", model: Person, from: 'persons.id', to: 'persons.parent_id' }
-		// 	// It is not just the query for the model, it is also the
-		// ]
+				switch (action) {
+					case "getAll":
+						return await model.relatedQuery(relatedQuery).for(primaryId);
+					case "get":
+						return await model
+							.relatedQuery(relatedQuery)
+							.for(primaryId)
+							.where("id", params.id)
+							.first();
+					case "create":
+						// We need to clean up params to not include person_id
+						return await model
+							.relatedQuery(relatedQuery)
+							.for(primaryId)
+							.insert(paramsToInsert);
+					case "update":
+						// How to apply update?
+						return await model
+							.relatedQuery(relatedQuery)
+							.for(primaryId)
+							.patchAndFetchById(params.id, paramsToUpdate);
+					case "delete": {
+						const deletedCount = await model
+							.relatedQuery(relatedQuery)
+							.for(primaryId)
+							.delete()
+							.where("id", params.id);
+						if (deletedCount === 0) {
+							throw new Error(`Record with id ${params.id} not found`);
+						}
+						return params.id;
+					}
+				}
+			},
+		},
 	});
 }
 

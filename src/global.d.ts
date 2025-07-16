@@ -90,3 +90,19 @@ export type GenerateServiceParams = {
 };
 
 export type ErrorOfSomeKind = Error | string | unknown;
+
+export type ServiceOptions = {
+	customModelAction?: (
+		action: string,
+		model: ModelType,
+		params: Params,
+	) => Promise<(params: Params) => Promise<ServiceResponse>>;
+};
+
+// Plugin options type
+export type FastifyResourcePluginOptions = {
+	model: ModelType;
+	resourceList: ResourceOrResourcesList;
+	// This is a way of specifying advanced options if say setting up a more advanced configuration like loading a relatedQuery for a resource
+	serviceOptions?: ServiceOptions;
+};

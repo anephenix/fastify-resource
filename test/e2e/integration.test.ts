@@ -187,78 +187,78 @@ describe("Integration tests", () => {
 	});
 
 	// NOTE - disabled for now until support for nested self-referential resources is implemented
-	// describe('Nested Self-Referential Resources', () => {
-	//   describe('GET /people/:person_id/children', () => {
-	//     it('should return a list of children for a person', async () => {
-	//       const response = await fetch(`${baseUrl}/people/1/children`);
-	//       const data = await response.json();
-	//       assert.strictEqual(response.status, 200);
-	//       assert.strictEqual(data.length, 2);
-	//       assert.strictEqual(data[0].firstName, seedData.children[0].firstName);
-	//       assert.strictEqual(data[1].firstName, seedData.children[1].firstName);
-	//     });
-	//   });
+	describe("Nested Self-Referential Resources", () => {
+		describe("GET /people/:person_id/children", () => {
+			it("should return a list of children for a person", async () => {
+				const response = await fetch(`${baseUrl}/people/1/children`);
+				const data = await response.json();
+				assert.strictEqual(response.status, 200);
+				assert.strictEqual(data.length, 2);
+				assert.strictEqual(data[0].firstName, seedData.children[0].firstName);
+				assert.strictEqual(data[1].firstName, seedData.children[1].firstName);
+			});
+		});
 
-	//   describe('GET /people/:person_id/children/:id', () => {
-	//     it('should return a child by ID for a person', async () => {
-	//       const response = await fetch(`${baseUrl}/people/1/children/2`);
-	//       const data = await response.json();
-	//       assert.strictEqual(response.status, 200);
-	//       assert.strictEqual(data.firstName, seedData.children[0].firstName);
-	//     });
-	//   });
+		describe("GET /people/:person_id/children/:id", () => {
+			it("should return a child by ID for a person", async () => {
+				const response = await fetch(`${baseUrl}/people/1/children/2`);
+				const data = await response.json();
+				assert.strictEqual(response.status, 200);
+				assert.strictEqual(data.firstName, seedData.children[0].firstName);
+			});
+		});
 
-	//   describe('POST /people/:person_id/children', () => {
-	//     it('should create a new child for a person', async () => {
-	//       const newChild = { firstName: 'Daniel' };
-	//       const response = await fetch(`${baseUrl}/people/1/children`, {
-	//         method: 'POST',
-	//         headers: { 'Content-Type': 'application/json' },
-	//         body: JSON.stringify(newChild),
-	//       });
-	//       const data = await response.json();
-	//       assert.strictEqual(response.status, 201);
-	//       assert.strictEqual(data.firstName, newChild.firstName);
-	//       const child = (await Person.relatedQuery('children')
-	//         .for(1)
-	//         .findById(data.id)) as Person;
-	//       if (!child) {
-	//         throw new Error('Child not found in database');
-	//       }
-	//       assert.strictEqual(child.firstName, newChild.firstName);
-	//     });
-	//   });
+		describe("POST /people/:person_id/children", () => {
+			it("should create a new child for a person", async () => {
+				const newChild = { firstName: "Daniel" };
+				const response = await fetch(`${baseUrl}/people/1/children`, {
+					method: "POST",
+					headers: { "Content-Type": "application/json" },
+					body: JSON.stringify(newChild),
+				});
+				const data = await response.json();
+				assert.strictEqual(response.status, 201);
+				assert.strictEqual(data.firstName, newChild.firstName);
+				const child = (await Person.relatedQuery("children")
+					.for(1)
+					.findById(data.id)) as Person;
+				if (!child) {
+					throw new Error("Child not found in database");
+				}
+				assert.strictEqual(child.firstName, newChild.firstName);
+			});
+		});
 
-	//   describe('PATCH /people/:person_id/children/:id', () => {
-	//     it('should update a child by ID for a person', async () => {
-	//       const updatedChild = { firstName: 'Biff' };
-	//       const response = await fetch(`${baseUrl}/people/1/children/2`, {
-	//         method: 'PATCH',
-	//         headers: { 'Content-Type': 'application/json' },
-	//         body: JSON.stringify(updatedChild),
-	//       });
-	//       const data = await response.json();
-	//       assert.strictEqual(response.status, 200);
-	//       assert.strictEqual(data.firstName, updatedChild.firstName);
-	//       const child = (await Person.relatedQuery('children')
-	//         .for(1)
-	//         .findById(2)) as Person;
-	//       if (!child) {
-	//         throw new Error('Child not found in database');
-	//       }
-	//       assert.strictEqual(child.firstName, updatedChild.firstName);
-	//     });
-	//   });
+		describe("PATCH /people/:person_id/children/:id", () => {
+			it("should update a child by ID for a person", async () => {
+				const updatedChild = { firstName: "Biff" };
+				const response = await fetch(`${baseUrl}/people/1/children/2`, {
+					method: "PATCH",
+					headers: { "Content-Type": "application/json" },
+					body: JSON.stringify(updatedChild),
+				});
+				const data = await response.json();
+				assert.strictEqual(response.status, 200);
+				assert.strictEqual(data.firstName, updatedChild.firstName);
+				const child = (await Person.relatedQuery("children")
+					.for(1)
+					.findById(2)) as Person;
+				if (!child) {
+					throw new Error("Child not found in database");
+				}
+				assert.strictEqual(child.firstName, updatedChild.firstName);
+			});
+		});
 
-	//   describe('DELETE /people/:person_id/children/:id', () => {
-	//     it('should delete a child by ID for a person', async () => {
-	//       const response = await fetch(`${baseUrl}/people/1/children/3`, {
-	//         method: 'DELETE',
-	//       });
-	//       assert.strictEqual(response.status, 200);
-	//       const child = await Person.relatedQuery('children').for(1).findById(3);
-	//       assert.strictEqual(child, undefined);
-	//     });
-	//   });
-	// });
+		describe("DELETE /people/:person_id/children/:id", () => {
+			it("should delete a child by ID for a person", async () => {
+				const response = await fetch(`${baseUrl}/people/1/children/3`, {
+					method: "DELETE",
+				});
+				assert.strictEqual(response.status, 200);
+				const child = await Person.relatedQuery("children").for(1).findById(3);
+				assert.strictEqual(child, undefined);
+			});
+		});
+	});
 });

@@ -3,15 +3,10 @@ import type {
 	ErrorOfSomeKind,
 	ModelType,
 	Params,
+	ServiceOptions,
 	ServiceResponse,
 } from "./global";
-
-// Helper functions
-
-const objectWithoutKey = (object: Record<string, unknown>, key: string) => {
-	const { [key]: _, ...otherKeys } = object;
-	return otherKeys;
-};
+import { objectWithoutKey } from "./utils";
 
 /* 
   NOTE:
@@ -62,10 +57,19 @@ const handleError = (error: ErrorOfSomeKind) => {
 	return { success: false, error: new Error("No error provided") };
 };
 
-const serviceFunction = (action: string, model: ModelType) => {
+const serviceFunction = (
+	action: string,
+	model: ModelType,
+	serviceOptions?: ServiceOptions,
+) => {
 	return async (params: Params): Promise<ServiceResponse> => {
 		try {
-			const data = await modelAction(action, model, params);
+			let data = null;
+			if (serviceOptions?.customModelAction) {
+				data = await serviceOptions.customModelAction(action, model, params);
+			} else {
+				data = await modelAction(action, model, params);
+			}
 			return { success: true, data };
 		} catch (error) {
 			return handleError(error);
@@ -74,13 +78,13 @@ const serviceFunction = (action: string, model: ModelType) => {
 };
 
 // The generator function
-function serviceGenerator(model: ModelType) {
+function serviceGenerator(model: ModelType, serviceOptions?: ServiceOptions) {
 	return {
-		getAll: serviceFunction("getAll", model),
-		create: serviceFunction("create", model),
-		get: serviceFunction("get", model),
-		update: serviceFunction("update", model),
-		delete: serviceFunction("delete", model),
+		getAll: serviceFunction("getAll", model, serviceOptions),
+		create: serviceFunction("create", model, serviceOptions),
+		get: serviceFunction("get", model, serviceOptions),
+		update: serviceFunction("update", model, serviceOptions),
+		delete: serviceFunction("delete", model, serviceOptions),
 	};
 }
 

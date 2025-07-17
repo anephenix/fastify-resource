@@ -1,5 +1,66 @@
 # CHANGELOG
 ### 0.0.2 - Thursday 16th January, 2025
+### 0.0.7 - Thursday 17th July, 2025
+
+- Added some documentation for the self-referential join support and customModelAction feature
+- Added support for customModelAction and relatedQuery for self-referential models
+- Merge branch 'main' of github.com:anephenix/fastify-resource
+- Got a working version of supporting self-referential models working
+- Merge pull request #107 from anephenix/dependabot/npm_and_yarn/biomejs/biome-2.1.1
+- Bump @biomejs/biome from 2.1.0 to 2.1.1
+- Removed CodeClimate from the GitHub pipeline
+- Work in progress
+- Remove ts-node dependency
+- Replace prettier, eslint and mocha with biome and vitest
+- Merge branch 'main' of github.com:anephenix/fastify-resource
+- Initial work on providing support for self-referential models in nested resources
+- Merge pull request #105 from anephenix/dependabot/npm_and_yarn/eslint-9.30.1
+- Merge pull request #104 from anephenix/dependabot/npm_and_yarn/globals-16.3.0
+- Bump eslint from 9.30.0 to 9.30.1
+- Bump globals from 16.2.0 to 16.3.0
+- Merge pull request #103 from anephenix/dependabot/npm_and_yarn/typescript-eslint-8.35.1
+- Merge pull request #102 from anephenix/dependabot/npm_and_yarn/eslint-9.30.0
+- Merge pull request #101 from anephenix/dependabot/npm_and_yarn/mocha-11.7.1
+- Merge pull request #100 from anephenix/dependabot/npm_and_yarn/eslint/js-9.30.0
+- Merge pull request #99 from anephenix/dependabot/npm_and_yarn/prettier-3.6.2
+- Bump typescript-eslint from 8.34.1 to 8.35.1
+- Bump eslint from 9.29.0 to 9.30.0
+- Bump mocha from 11.7.0 to 11.7.1
+- Bump @eslint/js from 9.29.0 to 9.30.0
+- Bump prettier from 3.6.0 to 3.6.2
+- Merge pull request #98 from anephenix/dependabot/npm_and_yarn/prettier-3.6.0
+- Merge pull request #97 from anephenix/dependabot/npm_and_yarn/mocha-11.7.0
+- Bump prettier from 3.5.3 to 3.6.0
+- Bump mocha from 11.6.0 to 11.7.0
+- Merge pull request #96 from anephenix/dependabot/npm_and_yarn/typescript-eslint-8.34.1
+- Merge pull request #95 from anephenix/dependabot/npm_and_yarn/eslint/js-9.29.0
+- Merge pull request #94 from anephenix/dependabot/npm_and_yarn/fastify-5.4.0
+- Merge pull request #93 from anephenix/dependabot/npm_and_yarn/eslint-9.29.0
+- Bump typescript-eslint from 8.34.0 to 8.34.1
+- Bump @eslint/js from 9.28.0 to 9.29.0
+- Bump fastify from 5.3.3 to 5.4.0
+- Bump eslint from 9.28.0 to 9.29.0
+- Merge pull request #92 from anephenix/dependabot/npm_and_yarn/typescript-eslint-8.34.0
+- Merge pull request #91 from anephenix/dependabot/npm_and_yarn/mocha-11.6.0
+- Bump typescript-eslint from 8.33.1 to 8.34.0
+- Bump mocha from 11.5.0 to 11.6.0
+- Updated package-lock.json
+- Merge branch 'main' of github.com:anephenix/fastify-resource
+- Modified GitHub workflow permissions
+- Merge pull request #90 from anephenix/dependabot/npm_and_yarn/eslint/js-9.28.0
+- Merge pull request #89 from anephenix/dependabot/npm_and_yarn/eslint-9.28.0
+- Merge pull request #88 from anephenix/dependabot/npm_and_yarn/typescript-eslint-8.33.1
+- Bump @eslint/js from 9.27.0 to 9.28.0
+- Bump eslint from 9.27.0 to 9.28.0
+- Bump typescript-eslint from 8.32.1 to 8.33.1
+- Merge pull request #86 from anephenix/dependabot/npm_and_yarn/globals-16.2.0
+- Merge pull request #87 from anephenix/dependabot/npm_and_yarn/mocha-11.5.0
+- Bump mocha from 11.4.0 to 11.5.0
+- Bump globals from 16.1.0 to 16.2.0
+- Added the E2E tests reference to the README
+- Small fix for the README
+- Tidied up the README to make it more understandable
+
 ### 0.0.6 - Friday 23rd May, 2025
 
 - Merge pull request #84 from anephenix/feature/use-fastifys-plugin-architecture

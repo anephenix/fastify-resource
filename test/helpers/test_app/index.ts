@@ -1,6 +1,5 @@
 import fastify from "fastify";
 import fastifyResource from "../../../src/index";
-import { objectWithoutKey } from "../../../src/utils";
 import Person from "./models/Person";
 import Possession from "./models/Possession";
 

@@ -11,6 +11,7 @@ async function createSchema() {
 	await unitTestDB.schema.createTable("employees", (table) => {
 		table.increments("id").primary();
 		table.string("name");
+		table.integer("manager_id").references("employees.id");
 	});
 }
 

@@ -21,114 +21,21 @@ app.register(fastifyResource, {
 	resourceList: ["person", "possession"],
 });
 
-// Let's figure out what is needed for creating a resource based on the relation mapping rather than another model
+/*
+	Question - how does model know that the last item in the 
+	resourceList is a relatedQuery? - Let's assume it is the last 
+	item in the resourceList for now, and then we'll focus on 
+	support 3/4/5 levels deep later
+*/
 const enableNestedSelfReferentialExample = true;
 if (enableNestedSelfReferentialExample) {
 	app.register(fastifyResource, {
 		model: Person,
-		// Maybe a resourceToModel map is needed here - { person: {model Person}, children: {model: Person, from: '', to: ''} } - which helps to demystify it
-		// How does the resourceList work with relations rather than assuming an existing model exists?
-		/*
-      Hang on, if the next nested resource is not the singular name of the 
-      next resource, then we can determine that the resource could be a 
-      relation instead, and look at that. 
-
-      - Task list
-      - Check if the resource name is a plural version of the model name
-      - If it is, then it is good
-      - If not, then check if the resource name is a match for the relation mappings
-      - If it is one of the relation mapping options, then extract the fields to match on
-      - Q - What fields to match ?
-      - 1st model would be persons.person_id, but in this case it is persons.parentId (the 'to' field)
-      - We would need to write some unit tests to verify this behaviour
-      - We would also need to look at how to handle cases where the model/resource name match, and the relation mapping matches are not found - thus requiring details configuration settings  
-      - This could be for database schemas that have different kinds of table naming conventions
-
-	  Also, how would it work for 3 levels of nesting?
-	  And how would it know the fields for mapping
-	  - It feels like the config for the service generator needs to be able to contain this information so that it can perform the correct queries,
-		as it currently works on the assumption that the model is the same as the resource name and that a specific pattern is used for the fields. 
-
-
-	// Let's use an estate agent's property listing as an example
-	
-	- estateAgent
-		- properties
-			- property
-				- rooms
-					- room
-
-	/estate-agents/:estateAgentId/properties/:propertyId/rooms/:roomId
-
-	EstateAgent / Property / Room
-
-	- Room belongs to Property
-	- Property belongs to EstateAgent
-
-	How would an Objection.js model query look like for this?
-
-	Database schema:
-
-	- estate_agents
-		- id
-		- name
-
-	- properties
-		- id
-		- estate_agent_id
-		- address
-	- rooms
-		- id
-		- property_id
-		- name
-      
-    */
 		resourceList: ["person", "child"],
 		serviceOptions: {
-			customModelAction: async (action, model, params) => {
-				const relatedQuery = "children";
-				const primaryKey = "person_id";
-				const primaryId = params[primaryKey];
-				const paramsToInsert = objectWithoutKey(params, primaryKey);
-				const paramsToUpdate = objectWithoutKey(
-					objectWithoutKey(params, "id"),
-					primaryKey,
-				);
-
-				switch (action) {
-					case "getAll":
-						return await model.relatedQuery(relatedQuery).for(primaryId);
-					case "get":
-						return await model
-							.relatedQuery(relatedQuery)
-							.for(primaryId)
-							.where("id", params.id)
-							.first();
-					case "create":
-						// We need to clean up params to not include person_id
-						return await model
-							.relatedQuery(relatedQuery)
-							.for(primaryId)
-							.insert(paramsToInsert);
-					case "update":
-						// How to apply update?
-						return await model
-							.relatedQuery(relatedQuery)
-							.for(primaryId)
-							.patchAndFetchById(params.id, paramsToUpdate);
-					case "delete": {
-						const deletedCount = await model
-							.relatedQuery(relatedQuery)
-							.for(primaryId)
-							.delete()
-							.where("id", params.id);
-						if (deletedCount === 0) {
-							throw new Error(`Record with id ${params.id} not found`);
-						}
-						return params.id;
-					}
-				}
-			},
+			type: "relatedQuery",
+			relatedQuery: "children",
+			primaryKey: "person_id",
 		},
 	});
 }

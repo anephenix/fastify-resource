@@ -57,6 +57,51 @@ const handleError = (error: ErrorOfSomeKind) => {
 	return { success: false, error: new Error("No error provided") };
 };
 
+const generateModelAction = (relatedQuery: string, primaryKey: string) => {
+	return async (action: string, model: ModelType, params: Params) => {
+		const primaryId = params[primaryKey];
+		const paramsToInsert = objectWithoutKey(params, primaryKey);
+		const paramsToUpdate = objectWithoutKey(
+			objectWithoutKey(paramsToInsert, "id"),
+			primaryKey,
+		);
+
+		switch (action) {
+			case "getAll":
+				return await model.relatedQuery(relatedQuery).for(primaryId);
+			case "get":
+				return await model
+					.relatedQuery(relatedQuery)
+					.for(primaryId)
+					.where("id", params.id)
+					.first();
+			case "create":
+				return await model
+					.relatedQuery(relatedQuery)
+					.for(primaryId)
+					.insert(paramsToInsert);
+			case "update":
+				return await model
+					.relatedQuery(relatedQuery)
+					.for(primaryId)
+					.patchAndFetchById(params.id, paramsToUpdate);
+			case "delete": {
+				const deletedCount = await model
+					.relatedQuery(relatedQuery)
+					.for(primaryId)
+					.delete()
+					.where("id", params.id);
+				if (deletedCount === 0) {
+					throw new Error(`Record with id ${params.id} not found`);
+				}
+				return params.id;
+			}
+			default:
+				throw new Error(`Unknown action: ${action}`);
+		}
+	};
+};
+
 const serviceFunction = (
 	action: string,
 	model: ModelType,
@@ -67,6 +112,17 @@ const serviceFunction = (
 			let data = null;
 			if (serviceOptions?.customModelAction) {
 				data = await serviceOptions.customModelAction(action, model, params);
+			} else if (
+				serviceOptions?.type === "relatedQuery" &&
+				serviceOptions.relatedQuery &&
+				serviceOptions.primaryKey
+			) {
+				const { relatedQuery, primaryKey } = serviceOptions;
+				const relatedQueryModelAction = generateModelAction(
+					relatedQuery,
+					primaryKey,
+				);
+				data = await relatedQueryModelAction(action, model, params);
 			} else {
 				data = await modelAction(action, model, params);
 			}

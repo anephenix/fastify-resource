@@ -92,6 +92,9 @@ export type GenerateServiceParams = {
 export type ErrorOfSomeKind = Error | string | unknown;
 
 export type ServiceOptions = {
+	type?: "relatedQuery";
+	relatedQuery?: string; // This is the relatedQuery to use for the resource
+	primaryKey?: string; // This is the primary key to use for the resource
 	customModelAction?: (
 		action: string,
 		model: ModelType,

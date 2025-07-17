@@ -5,10 +5,26 @@ Model.knex(unitTestDB);
 
 // Person model
 class Employee extends Model {
-	name: unknown;
+	id: number;
+	name: string;
+	manager_id?: number;
+	reports?: Employee[];
 
 	static get tableName() {
 		return "employees";
+	}
+
+	static get relationMappings() {
+		return {
+			reports: {
+				relation: Model.HasManyRelation,
+				modelClass: Employee,
+				join: {
+					from: "employees.id",
+					to: "employees.manager_id",
+				},
+			},
+		};
 	}
 }
 

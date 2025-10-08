@@ -1,4 +1,19 @@
-const seedData = {
+export type Possession = {
+	name: string;
+};
+
+export type Child = {
+	firstName: string;
+	possessions: Possession[];
+};
+
+export type SeedData = {
+	firstName: string;
+	children: Child[];
+	possessions: Possession[];
+};
+
+const seedData: SeedData = {
 	firstName: "Sylvester",
 	children: [
 		{

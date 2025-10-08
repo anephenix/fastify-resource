@@ -1,12 +1,17 @@
 // Dependencies
 import type {
+	ForIdValue,
+	MaybeCompositeId,
+	Model,
+	ModelClass,
+} from "objection";
+import type {
 	ErrorOfSomeKind,
-	ModelType,
 	Params,
 	ServiceOptions,
 	ServiceResponse,
-} from "./global";
-import { objectWithoutKey } from "./utils";
+} from "./global.js";
+import { objectWithoutKey } from "./utils.js";
 
 /* 
   NOTE:
@@ -23,7 +28,7 @@ import { objectWithoutKey } from "./utils";
 */
 const modelAction = async (
 	action: string,
-	model: ModelType,
+	model: ModelClass<Model>,
 	params: Params,
 ) => {
 	switch (action) {
@@ -36,9 +41,14 @@ const modelAction = async (
 		case "update":
 			return await model
 				.query()
-				.patchAndFetchById(params.id, objectWithoutKey(params, "id"));
+				.patchAndFetchById(
+					params.id as MaybeCompositeId,
+					objectWithoutKey(params, "id"),
+				);
 		case "delete": {
-			const deletedCount = await model.query().deleteById(params.id);
+			const deletedCount = await model
+				.query()
+				.deleteById(params.id as MaybeCompositeId);
 			if (deletedCount === 0) {
 				throw new Error(`Record with id ${params.id} not found`);
 			}
@@ -58,8 +68,8 @@ const handleError = (error: ErrorOfSomeKind) => {
 };
 
 const generateModelAction = (relatedQuery: string, primaryKey: string) => {
-	return async (action: string, model: ModelType, params: Params) => {
-		const primaryId = params[primaryKey];
+	return async (action: string, model: ModelClass<Model>, params: Params) => {
+		const primaryId = params[primaryKey] as ForIdValue;
 		const paramsToInsert = objectWithoutKey(params, primaryKey);
 		const paramsToUpdate = objectWithoutKey(
 			objectWithoutKey(paramsToInsert, "id"),
@@ -73,7 +83,7 @@ const generateModelAction = (relatedQuery: string, primaryKey: string) => {
 				return await model
 					.relatedQuery(relatedQuery)
 					.for(primaryId)
-					.where("id", params.id)
+					.findById(params.id as MaybeCompositeId)
 					.first();
 			case "create":
 				return await model
@@ -84,13 +94,13 @@ const generateModelAction = (relatedQuery: string, primaryKey: string) => {
 				return await model
 					.relatedQuery(relatedQuery)
 					.for(primaryId)
-					.patchAndFetchById(params.id, paramsToUpdate);
+					.patchAndFetchById(params.id as MaybeCompositeId, paramsToUpdate);
 			case "delete": {
 				const deletedCount = await model
 					.relatedQuery(relatedQuery)
 					.for(primaryId)
-					.delete()
-					.where("id", params.id);
+					.findById(params.id as MaybeCompositeId)
+					.delete();
 				if (deletedCount === 0) {
 					throw new Error(`Record with id ${params.id} not found`);
 				}
@@ -104,7 +114,7 @@ const generateModelAction = (relatedQuery: string, primaryKey: string) => {
 
 const serviceFunction = (
 	action: string,
-	model: ModelType,
+	model: ModelClass<Model>,
 	serviceOptions?: ServiceOptions,
 ) => {
 	return async (params: Params): Promise<ServiceResponse> => {
@@ -134,7 +144,10 @@ const serviceFunction = (
 };
 
 // The generator function
-function serviceGenerator(model: ModelType, serviceOptions?: ServiceOptions) {
+function serviceGenerator(
+	model: ModelClass<Model>,
+	serviceOptions?: ServiceOptions,
+) {
 	return {
 		getAll: serviceFunction("getAll", model, serviceOptions),
 		create: serviceFunction("create", model, serviceOptions),

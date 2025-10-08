@@ -6,7 +6,7 @@ import type {
 	ResourceOrResourcesList,
 	ResourcesList,
 	Route,
-} from "./global";
+} from "./global.js";
 
 function toSnakeCase(str: string): string {
 	return str

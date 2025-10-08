@@ -5,8 +5,8 @@ Model.knex(unitTestDB);
 
 // Person model
 class Employee extends Model {
-	id: number;
-	name: string;
+	id!: number;
+	name!: string;
 	manager_id?: number;
 	reports?: Employee[];
 

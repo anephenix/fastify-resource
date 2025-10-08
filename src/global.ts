@@ -1,4 +1,5 @@
 import type { FastifyRequest } from "fastify";
+import type { Model, ModelClass } from "objection";
 
 // NOTE - This needs adjusting
 export type Metadata = string | object;
@@ -29,8 +30,6 @@ export type Reply = {
 	statusCode: number;
 	code: (code: StatusCode) => void;
 };
-
-export type ModelType = ObjectionModel;
 
 export type ResourcesList = Array<string>;
 export type ResourceOrResourcesList = ResourcesList | string;
@@ -97,14 +96,14 @@ export type ServiceOptions = {
 	primaryKey?: string; // This is the primary key to use for the resource
 	customModelAction?: (
 		action: string,
-		model: ModelType,
+		model: ModelClass<Model>,
 		params: Params,
-	) => Promise<(params: Params) => Promise<ServiceResponse>>;
+	) => void;
 };
 
 // Plugin options type
 export type FastifyResourcePluginOptions = {
-	model: ModelType;
+	model: ModelClass<Model>;
 	resourceList: ResourceOrResourcesList;
 	// This is a way of specifying advanced options if say setting up a more advanced configuration like loading a relatedQuery for a resource
 	serviceOptions?: ServiceOptions;

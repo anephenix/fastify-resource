@@ -262,7 +262,9 @@ You can generate a custom model action like this:
   - update
   - delete
 */
-const customModelAction = async (action: string, model: ModelType, params: Params) => {
+import type { Model } from 'objection';
+
+const customModelAction = async (action: string, model: Model, params: Params) => {
   const relatedQuery = 'children';
   const primaryKey = 'person_id';
   const primaryId = params[primaryKey];

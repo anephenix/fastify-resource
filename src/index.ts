@@ -2,16 +2,16 @@
 
 import type { FastifyInstance as RealFastifyInstance } from "fastify";
 import fastifyPlugin from "fastify-plugin";
-import controllerGenerator from "./controller";
+import type { Model, ModelClass } from "objection";
+import controllerGenerator from "./controller.js";
 import type {
 	ControllerAction,
 	FastifyResourcePluginOptions,
 	Method,
-	ModelType,
 	ResourceOrResourcesList,
-} from "./global";
-import { resourceRoutes } from "./route";
-import serviceGenerator from "./service";
+} from "./global.js";
+import { resourceRoutes } from "./route.js";
+import serviceGenerator from "./service.js";
 
 type RouteMapParams = {
 	method: Method;
@@ -28,7 +28,10 @@ type AttachParams = {
 	fastify: FastifyInstance;
 };
 
-function resource(model: ModelType, resourceList: ResourceOrResourcesList) {
+function resource(
+	model: ModelClass<Model>,
+	resourceList: ResourceOrResourcesList,
+) {
 	const service = serviceGenerator(model);
 	const controller = controllerGenerator(service);
 	const routes = resourceRoutes(resourceList, controller);

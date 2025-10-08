@@ -1,5 +1,6 @@
 import { appDB } from "../knexConnections";
 import Person from "./models/Person";
+import type { SeedData } from "./seedData";
 
 /*
   Creates the database schema if it doesn't exist.
@@ -26,8 +27,7 @@ async function createSchema() {
 	});
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-async function insertSampleData(data: any) {
+async function insertSampleData(data: SeedData) {
 	await Person.query().insertGraph(data);
 }
 

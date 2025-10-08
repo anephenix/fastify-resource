@@ -16,7 +16,7 @@ import type {
 	Service,
 	ServiceKey,
 	StatusCode,
-} from "./global";
+} from "./global.js";
 
 /*
   This function looks at the error object and returns the correct HTTP status 

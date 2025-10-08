@@ -3,3 +3,4 @@ dist
 node_modules
 .husky
 .nyc_output
+dump.rdb

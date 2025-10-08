@@ -1,41 +1,53 @@
 {
   "name": "@anephenix/fastify-resource",
-  "module": "dist/fastify-resource.esm.js",
   "version": "0.0.7",
   "description": "A way for generating resources using fastify and objection",
-  "scripts": {
-    "analyze": "size-limit --why",
-    "build": "tsc --project tsconfig.json",
-    "cover": "cross-env NODE_ENV=test npx vitest test --run --coverage",
-    "lint": "npx @biomejs/biome check --write src test scripts",
-    "prepare-patch-release": "npm run update-changelog && git add CHANGELOG.md && git commit -m \"Updated changelog\" && npm version patch",
-    "publish-patch-release": "npm run prepare-patch-release && git push origin main && git push --tags",
-    "size": "size-limit",
-    "test": "cross-env NODE_ENV=test npx vitest test --run",
-    "update-changelog": "node --experimental-strip-types scripts/update-changelog.ts",
-    "watch": "tsc --project tsconfig.json --watch"
-  },
+  "type": "module",
+	"exports": {
+		".": {
+			"import": "./dist/index.js",
+			"require": "./dist/index.js"
+		}
+	},
+	"types": "./dist/index.d.ts",
+  "files": [
+    "dist",
+    "README.md"
+  ],
   "keywords": [
     "fastify",
     "objection"
   ],
   "author": "Paul Jensen <paul@anephenix.com>",
   "license": "MIT",
-  "main": "dist/index.js",
-  "typings": "dist/index.d.ts",
-  "files": [
-    "dist",
-    "src"
-  ],
-  "type": "module",
   "engines": {
     "node": ">=12"
+  }, 
+  "scripts": {
+    "analyze": "size-limit --why",
+    "build": "tsc --project tsconfig.json",
+    "cover": "cross-env NODE_ENV=test npx vitest test --run --coverage",
+    "lint": "npx @biomejs/biome check --write src test scripts",
+    "lint:package": "npx publint",
+    "prepare-patch-release": "npm run update-changelog && git add CHANGELOG.md && git commit -m \"Updated changelog\" && npm version patch",
+    "publish-patch-release": "npm run prepare-patch-release && git push origin main && git push --tags",
+    "size": "size-limit",
+    "test": "cross-env NODE_ENV=test npx vitest test --run",
+    "update-changelog": "node --experimental-strip-types scripts/update-changelog.ts",
+    "watch": "tsc --project tsconfig.json --watch",
+    "prepare": "husky"
+  },
+  "dependencies": {
+    "fastify": "^5.1.0",
+    "fastify-plugin": "^5.0.1",
+    "pluralize": "^8.0.0"
   },
   "devDependencies": {
     "@biomejs/biome": "2.2.5",
     "@size-limit/esbuild": "^11.1.6",
     "@size-limit/esbuild-why": "^11.1.6",
     "@size-limit/preset-small-lib": "^11.1.5",
+    "@types/node": "^24.7.0",
     "@types/pluralize": "^0.0.33",
     "@vitest/coverage-v8": "^3.2.4",
     "cross-env": "^10.0.0",
@@ -43,6 +55,7 @@
     "husky": "^9.1.6",
     "knex": "^3.1.0",
     "objection": "^3.1.5",
+    "publint": "^0.3.14",
     "size-limit": "^11.1.5",
     "sqlite3": "^5.1.7",
     "typescript": "^5.7.2",
@@ -53,10 +66,5 @@
       "path": "dist/*.js",
       "limit": "11 KB"
     }
-  ],
-  "dependencies": {
-    "fastify": "^5.1.0",
-    "fastify-plugin": "^5.0.1",
-    "pluralize": "^8.0.0"
-  }
+  ]
 }

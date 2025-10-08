@@ -1,6 +1,7 @@
 import assert from "node:assert";
-import { DBError } from "objection";
+import { DBError, type Model, type ModelClass } from "objection";
 import { afterAll, beforeAll, describe, it } from "vitest";
+import type { Params, ServiceOptions } from "../../src/global.js";
 import serviceGenerator from "../../src/service";
 import { unitTestDB } from "../helpers/knexConnections";
 import Employee from "../helpers/unit_tests/models/Employee";
@@ -60,7 +61,12 @@ describe("service", () => {
 							name: "John",
 						});
 						assert.strictEqual(success, true);
-						assert.deepEqual(data, { id: 1, name: "John" });
+						assert.deepEqual(data, {
+							id: 1,
+							name: "John",
+							manager_id: undefined,
+							reports: undefined,
+						});
 						assert.strictEqual(error, undefined);
 					});
 				});
@@ -84,7 +90,12 @@ describe("service", () => {
 						const service = serviceGenerator(Employee);
 						const { success, data, error } = await service.get({ id: 1 });
 						assert.strictEqual(success, true);
-						assert.deepEqual(data, { id: 1, name: "John", manager_id: null });
+						assert.deepEqual(data, {
+							id: 1,
+							name: "John",
+							manager_id: null,
+							reports: undefined,
+						});
 						assert.strictEqual(error, undefined);
 					});
 				});
@@ -109,7 +120,12 @@ describe("service", () => {
 							name: "Bob",
 						});
 						assert.strictEqual(success, true);
-						assert.deepEqual(data, { id: 1, name: "Bob", manager_id: null });
+						assert.deepEqual(data, {
+							id: 1,
+							name: "Bob",
+							manager_id: null,
+							reports: undefined,
+						});
 						assert.strictEqual(error, undefined);
 					});
 				});
@@ -162,7 +178,11 @@ describe("service", () => {
 			describe("when a customModelAction is provided", () => {
 				it("should call the customModelAction with the action, model, and params", async () => {
 					let called = false;
-					const customModelAction = async (action, model, params) => {
+					const customModelAction: ServiceOptions["customModelAction"] = async (
+						action: string,
+						model: ModelClass<Model>,
+						params: Params,
+					) => {
 						if (action === "getAll") {
 							called = true;
 							return model.query().where(params);
@@ -174,9 +194,9 @@ describe("service", () => {
 					});
 					const { success, data, error } = await service.getAll({});
 					assert.strictEqual(success, true);
-					assert.strictEqual(called, true);
-					assert.deepEqual(data, []);
+					assert.deepStrictEqual(data, []);
 					assert.strictEqual(error, undefined);
+					assert.strictEqual(called, true);
 				});
 			});
 

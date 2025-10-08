@@ -45,6 +45,9 @@ jobs:
       - name: Build project
         run: npm run build
 
+      - name: Lint package
+        run: npm run lint:package
+
       - name: Publish to npm
         run: npm publish
         env:

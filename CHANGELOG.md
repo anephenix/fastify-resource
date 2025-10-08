@@ -1,5 +1,48 @@
 # CHANGELOG
 ### 0.0.2 - Thursday 16th January, 2025
+### 0.0.8 - Wednesday 8th October, 2025
+
+- Added publint, made changes to the typescript config, and other changes
+- Merge pull request #125 from anephenix/dependabot/npm_and_yarn/biomejs/biome-2.2.5
+- Merge pull request #124 from anephenix/dependabot/npm_and_yarn/cross-env-10.1.0
+- Merge pull request #126 from anephenix/dependabot/npm_and_yarn/typescript-5.9.3
+- Bump typescript from 5.9.2 to 5.9.3
+- Bump @biomejs/biome from 2.2.4 to 2.2.5
+- Bump cross-env from 10.0.0 to 10.1.0
+- Merge pull request #123 from anephenix/dependabot/npm_and_yarn/fastify-plugin-5.1.0
+- Bump fastify-plugin from 5.0.1 to 5.1.0
+- Merge pull request #122 from anephenix/dependabot/npm_and_yarn/tar-fs-2.1.4
+- Bump tar-fs from 2.1.3 to 2.1.4
+- Merge pull request #121 from anephenix/dependabot/npm_and_yarn/fastify-5.6.1
+- Bump fastify from 5.6.0 to 5.6.1
+- Merge pull request #120 from anephenix/dependabot/npm_and_yarn/globals-16.4.0
+- Merge pull request #119 from anephenix/dependabot/npm_and_yarn/biomejs/biome-2.2.4
+- Bump globals from 16.3.0 to 16.4.0
+- Bump @biomejs/biome from 2.2.3 to 2.2.4
+- Merge pull request #118 from anephenix/dependabot/npm_and_yarn/vite-7.1.5
+- Bump vite from 7.0.3 to 7.1.5
+- Merge pull request #117 from anephenix/dependabot/npm_and_yarn/fastify-5.6.0
+- Merge pull request #116 from anephenix/dependabot/npm_and_yarn/biomejs/biome-2.2.3
+- Bump fastify from 5.5.0 to 5.6.0
+- Bump @biomejs/biome from 2.2.2 to 2.2.3
+- Merge pull request #115 from anephenix/dependabot/npm_and_yarn/biomejs/biome-2.2.2
+- Bump @biomejs/biome from 2.2.0 to 2.2.2
+- Merge pull request #114 from anephenix/dependabot/npm_and_yarn/biomejs/biome-2.2.0
+- Bump @biomejs/biome from 2.1.4 to 2.2.0
+- Merge pull request #113 from anephenix/dependabot/npm_and_yarn/fastify-5.5.0
+- Merge pull request #112 from anephenix/dependabot/npm_and_yarn/biomejs/biome-2.1.4
+- Bump fastify from 5.4.0 to 5.5.0
+- Bump @biomejs/biome from 2.1.3 to 2.1.4
+- Merge pull request #111 from anephenix/dependabot/npm_and_yarn/biomejs/biome-2.1.3
+- Merge pull request #110 from anephenix/dependabot/npm_and_yarn/typescript-5.9.2
+- Bump @biomejs/biome from 2.1.2 to 2.1.3
+- Bump typescript from 5.8.3 to 5.9.2
+- Merge pull request #109 from anephenix/dependabot/npm_and_yarn/cross-env-10.0.0
+- Bump cross-env from 7.0.3 to 10.0.0
+- Updated README badges
+- Merge pull request #108 from anephenix/dependabot/npm_and_yarn/biomejs/biome-2.1.2
+- Bump @biomejs/biome from 2.1.1 to 2.1.2
+
 ### 0.0.7 - Thursday 17th July, 2025
 
 - Added some documentation for the self-referential join support and customModelAction feature

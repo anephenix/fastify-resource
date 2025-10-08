@@ -1,15 +1,15 @@
 {
   "name": "@anephenix/fastify-resource",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "A way for generating resources using fastify and objection",
   "type": "module",
-	"exports": {
-		".": {
-			"import": "./dist/index.js",
-			"require": "./dist/index.js"
-		}
-	},
-	"types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.js"
+    }
+  },
+  "types": "./dist/index.d.ts",
   "files": [
     "dist",
     "README.md"
@@ -22,7 +22,7 @@
   "license": "MIT",
   "engines": {
     "node": ">=12"
-  }, 
+  },
   "scripts": {
     "analyze": "size-limit --why",
     "build": "tsc --project tsconfig.json",

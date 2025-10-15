@@ -1,5 +1,9 @@
 # CHANGELOG
 ### 0.0.2 - Thursday 16th January, 2025
+### 0.0.9 - Wednesday 15th October, 2025
+
+- Added support for preHandler functions
+
 ### 0.0.8 - Wednesday 8th October, 2025
 
 - Added publint, made changes to the typescript config, and other changes

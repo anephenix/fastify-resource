@@ -130,6 +130,39 @@ It will also:
 The result being that in a few lines of code you have implemented CRUD for 
 your resource.
 
+### Adding a preHandler
+
+If you want to run Fastify pre-handlers before each generated route (for example to apply auth or add headers), pass a `preHandler` function or array in the plugin options:
+
+```typescript
+/*
+  A simple example to demonstrate a preHandler function that
+  could run before the route's handler function is called
+*/
+const ensureAuth = async (request, reply) => {
+  if (!request.headers.authorization) {
+    reply.code(401);
+    throw new Error("Unauthorized");
+  }
+};
+
+app.register(fastifyResource, {
+  model: Person,
+  resourceList: 'person',
+  preHandler: ensureAuth,
+});
+```
+
+You can also supply an array of pre-handlers:
+
+```typescript
+app.register(fastifyResource, {
+  model: Person,
+  resourceList: 'person',
+  preHandler: [ensureAuth, otherHook],
+});
+```
+
 ### Creating nested routes
 
 Any REST API tends to implement a hierarchy of resources. Let's say for example

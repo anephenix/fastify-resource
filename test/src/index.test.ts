@@ -133,5 +133,75 @@ describe("index", () => {
 			assert.strictEqual(routeItems.patch.length, 1);
 			assert.strictEqual(routeItems.delete.length, 1);
 		});
+
+		describe("preHandler option", () => {
+			it("should register routes with a preHandler function that is called before the main function", async () => {
+				const recordedRoutes = {
+					get: [] as Array<{
+						url: string;
+						options?: { preHandler?: unknown };
+						handler: ControllerAction;
+					}>,
+					post: [] as Array<{
+						url: string;
+						options?: { preHandler?: unknown };
+						handler: ControllerAction;
+					}>,
+					patch: [] as Array<{
+						url: string;
+						options?: { preHandler?: unknown };
+						handler: ControllerAction;
+					}>,
+					delete: [] as Array<{
+						url: string;
+						options?: { preHandler?: unknown };
+						handler: ControllerAction;
+					}>,
+				};
+				const register =
+					(method: keyof typeof recordedRoutes) =>
+					(url: string, optsOrHandler: unknown, handler?: ControllerAction) => {
+						if (typeof optsOrHandler === "function") {
+							recordedRoutes[method].push({
+								url,
+								handler: optsOrHandler as ControllerAction,
+							});
+						} else {
+							recordedRoutes[method].push({
+								url,
+								options: optsOrHandler as { preHandler?: unknown },
+								handler: handler as ControllerAction,
+							});
+						}
+					};
+				const fastify = {
+					get: register("get"),
+					post: register("post"),
+					patch: register("patch"),
+					delete: register("delete"),
+				};
+				const preHandler = async () => {
+					/* noop */
+				};
+				const { default: fastifyResource } = await import("../../src/index");
+				// @ts-expect-error: mock fastify instance for plugin test
+				await fastifyResource(fastify, {
+					model: Person,
+					resourceList: ["people"],
+					preHandler,
+				});
+				const allRoutes = [
+					...recordedRoutes.get,
+					...recordedRoutes.post,
+					...recordedRoutes.patch,
+					...recordedRoutes.delete,
+				];
+				assert.strictEqual(allRoutes.length, 5);
+				for (const route of allRoutes) {
+					assert.ok(route.options);
+					assert.strictEqual(route.options?.preHandler, preHandler);
+				}
+			});
+		});
 	});
 });

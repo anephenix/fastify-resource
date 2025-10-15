@@ -1,4 +1,4 @@
-import type { FastifyRequest } from "fastify";
+import type { FastifyReply, FastifyRequest } from "fastify";
 import type { Model, ModelClass } from "objection";
 
 // NOTE - This needs adjusting
@@ -55,6 +55,13 @@ export type Route = {
 	handler: ControllerAction;
 };
 
+export type PreHandler = (
+	request: FastifyRequest,
+	reply: FastifyReply,
+) => void | Promise<void>;
+
+export type PreHandlerOption = PreHandler | Array<PreHandler>;
+
 export type ServiceKey = "getAll" | "create" | "get" | "update" | "delete";
 
 export type ActionServiceMappingKey = keyof ActionServiceMapping;
@@ -107,4 +114,5 @@ export type FastifyResourcePluginOptions = {
 	resourceList: ResourceOrResourcesList;
 	// This is a way of specifying advanced options if say setting up a more advanced configuration like loading a relatedQuery for a resource
 	serviceOptions?: ServiceOptions;
+	preHandler?: PreHandlerOption;
 };

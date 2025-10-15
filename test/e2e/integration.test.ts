@@ -45,6 +45,7 @@ describe("Integration tests", () => {
 			const response = await fetch(`${baseUrl}/people`);
 			const data = await response.json();
 			assert.strictEqual(response.status, 200);
+			assert.strictEqual(response.headers.get("x-prehandler"), "true");
 			assert.strictEqual(data.length, 3);
 			assert.strictEqual(data[0].firstName, seedData.firstName);
 			assert.strictEqual(data[1].firstName, seedData.children[0].firstName);
@@ -57,6 +58,7 @@ describe("Integration tests", () => {
 			const response = await fetch(`${baseUrl}/people/1`);
 			const data = await response.json();
 			assert.strictEqual(response.status, 200);
+			assert.strictEqual(response.headers.get("x-prehandler"), "true");
 			assert.strictEqual(data.firstName, seedData.firstName);
 		});
 	});
@@ -71,6 +73,7 @@ describe("Integration tests", () => {
 			});
 			const data = await response.json();
 			assert.strictEqual(response.status, 201);
+			assert.strictEqual(response.headers.get("x-prehandler"), "true");
 			assert.strictEqual(data.firstName, newPerson.firstName);
 			const person = await Person.query().findById(data.id);
 			if (!person) {
@@ -90,6 +93,7 @@ describe("Integration tests", () => {
 			});
 			const data = await response.json();
 			assert.strictEqual(response.status, 200);
+			assert.strictEqual(response.headers.get("x-prehandler"), "true");
 			assert.strictEqual(data.firstName, updatedPerson.firstName);
 			const person = await Person.query().findById(1);
 			if (!person) {
@@ -105,6 +109,7 @@ describe("Integration tests", () => {
 				method: "DELETE",
 			});
 			assert.strictEqual(response.status, 200);
+			assert.strictEqual(response.headers.get("x-prehandler"), "true");
 			const person = await Person.query().findById(4);
 			assert.strictEqual(person, undefined);
 		});

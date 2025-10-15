@@ -1,3 +1,4 @@
+import type { FastifyReply, FastifyRequest } from "fastify";
 import fastify from "fastify";
 import fastifyResource from "../../../src/index";
 import Person from "./models/Person";
@@ -5,9 +6,17 @@ import Possession from "./models/Possession";
 
 const app = fastify({ logger: false });
 
+const addPreHandlerHeader = async (
+	_request: FastifyRequest,
+	reply: FastifyReply,
+) => {
+	reply.header("x-prehandler", "true");
+};
+
 app.register(fastifyResource, {
 	model: Person,
 	resourceList: "person",
+	preHandler: addPreHandlerHeader,
 });
 
 app.register(fastifyResource, {
@@ -44,7 +53,5 @@ app.get("/", (request, reply) => {
 	request.log.info("Hello world");
 	reply.send({ hello: "world" });
 });
-
-// could handle listen and shutdown event elsewhere
 
 export default app;

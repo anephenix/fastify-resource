@@ -1,5 +1,56 @@
 # CHANGELOG
 ### 0.0.2 - Thursday 16th January, 2025
+### 0.0.10 - Wednesday 3rd December, 2025
+
+- Updated license
+- Updated dependencies
+- Updated dependencies
+- Merge pull request #152 from anephenix/dependabot/npm_and_yarn/types/node-24.10.1
+- Merge pull request #150 from anephenix/dependabot/npm_and_yarn/vitest-4.0.14
+- Bump @types/node from 24.9.0 to 24.10.1
+- Bump vitest from 4.0.4 to 4.0.14
+- Merge pull request #147 from anephenix/dependabot/npm_and_yarn/vitest/coverage-v8-4.0.13
+- Merge branch 'main' into dependabot/npm_and_yarn/vitest/coverage-v8-4.0.13
+- Merge pull request #148 from anephenix/dependabot/npm_and_yarn/biomejs/biome-2.3.7
+- Merge pull request #146 from anephenix/dependabot/npm_and_yarn/types/node-24.10.1
+- Merge pull request #145 from anephenix/dependabot/npm_and_yarn/vitest-4.0.13
+- Bump @biomejs/biome from 2.3.4 to 2.3.7
+- Bump @vitest/coverage-v8 from 4.0.8 to 4.0.13
+- Bump @types/node from 24.10.0 to 24.10.1
+- Bump vitest from 4.0.8 to 4.0.13
+- Merge pull request #143 from anephenix/dependabot/npm_and_yarn/vitest/coverage-v8-4.0.8
+- Merge pull request #142 from anephenix/dependabot/npm_and_yarn/fastify-5.6.2
+- Merge pull request #141 from anephenix/dependabot/npm_and_yarn/biomejs/biome-2.3.4
+- Bump @vitest/coverage-v8 from 4.0.6 to 4.0.8
+- Bump fastify from 5.6.1 to 5.6.2
+- Bump @biomejs/biome from 2.3.3 to 2.3.4
+- Merge pull request #138 from anephenix/dependabot/npm_and_yarn/vitest/coverage-v8-4.0.6
+- Bump @vitest/coverage-v8 from 4.0.4 to 4.0.6
+- Merge pull request #139 from anephenix/dependabot/npm_and_yarn/vitest-4.0.6
+- Merge pull request #136 from anephenix/dependabot/npm_and_yarn/biomejs/biome-2.3.3
+- Merge pull request #140 from anephenix/dependabot/npm_and_yarn/types/node-24.10.0
+- Merge pull request #137 from anephenix/dependabot/npm_and_yarn/globals-16.5.0
+- Bump @types/node from 24.9.1 to 24.10.0
+- Bump vitest from 4.0.4 to 4.0.6
+- Bump globals from 16.4.0 to 16.5.0
+- Bump @biomejs/biome from 2.3.1 to 2.3.3
+- Merge pull request #134 from anephenix/dependabot/npm_and_yarn/vitest/coverage-v8-4.0.4
+- Updated vitest dependency
+- Merge pull request #135 from anephenix/dependabot/npm_and_yarn/biomejs/biome-2.3.1
+- Merge pull request #132 from anephenix/dependabot/npm_and_yarn/types/node-24.9.1
+- Bump @biomejs/biome from 2.2.6 to 2.3.1
+- Bump @vitest/coverage-v8 from 3.2.4 to 4.0.4
+- Bump @types/node from 24.9.0 to 24.9.1
+- Small dependency updates
+- Merge pull request #131 from anephenix/dependabot/npm_and_yarn/vite-7.1.11
+- Bump vite from 7.1.5 to 7.1.11
+- Merge pull request #129 from anephenix/dependabot/npm_and_yarn/publint-0.3.15
+- Merge pull request #130 from anephenix/dependabot/npm_and_yarn/types/node-24.9.0
+- Merge pull request #128 from anephenix/dependabot/npm_and_yarn/biomejs/biome-2.2.6
+- Bump @types/node from 24.7.0 to 24.9.0
+- Bump publint from 0.3.14 to 0.3.15
+- Bump @biomejs/biome from 2.2.5 to 2.2.6
+
 ### 0.0.9 - Wednesday 15th October, 2025
 
 - Added support for preHandler functions

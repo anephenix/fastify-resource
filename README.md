@@ -363,4 +363,4 @@ npm t
 
 ### License and Credits
 
-&copy;2025 Anephenix Ltd. All Rights Reserved.
+&copy;2026 Anephenix Ltd. All Rights Reserved.

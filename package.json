@@ -23,6 +23,14 @@
   "engines": {
     "node": ">=12"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/anephenix/fastify-resource.git"
+  },
+  "homepage": "https://github.com/anephenix/fastify-resource",
+  "bugs": {
+    "url": "https://github.com/anephenix/fastify-resource/issues"
+  },
   "scripts": {
     "analyze": "size-limit --why",
     "build": "tsc --project tsconfig.json",

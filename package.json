@@ -1,6 +1,6 @@
 {
   "name": "@anephenix/fastify-resource",
-  "version": "0.0.10",
+  "version": "0.0.11",
   "description": "A way for generating resources using fastify and objection",
   "type": "module",
   "exports": {

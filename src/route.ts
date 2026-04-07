@@ -67,4 +67,4 @@ function resourceRoutes(
 	];
 }
 
-export { resourceRoutes, generateRoute, generateRoutePart };
+export { generateRoute, generateRoutePart, resourceRoutes };

@@ -81,9 +81,9 @@ const fastifyResource = fastifyPlugin(
 
 export default fastifyResource;
 export {
-	serviceGenerator,
-	controllerGenerator,
-	resourceRoutes,
-	resource,
 	attach,
+	controllerGenerator,
+	resource,
+	resourceRoutes,
+	serviceGenerator,
 };

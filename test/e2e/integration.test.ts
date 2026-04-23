@@ -191,7 +191,6 @@ describe("Integration tests", () => {
 		});
 	});
 
-	// NOTE - disabled for now until support for nested self-referential resources is implemented
 	describe("Nested Self-Referential Resources", () => {
 		describe("GET /people/:person_id/children", () => {
 			it("should return a list of children for a person", async () => {

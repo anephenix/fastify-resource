@@ -51,7 +51,7 @@
     "pluralize": "^8.0.0"
   },
   "devDependencies": {
-    "@biomejs/biome": "2.5.7",
+    "@biomejs/biome": "2.5.8",
     "@size-limit/esbuild": "^13.0.1",
     "@size-limit/esbuild-why": "^13.0.1",
     "@size-limit/preset-small-lib": "^13.0.1",

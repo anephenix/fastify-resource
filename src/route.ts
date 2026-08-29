@@ -55,14 +55,30 @@ function resourceRoutes(
 	const memberUrl = generateRoute(resourceList, "member");
 
 	return [
-		{ method: "get", url: collectionUrl, handler: controller.index },
-		{ method: "post", url: collectionUrl, handler: controller.create },
-		{ method: "get", url: memberUrl, handler: controller.get },
-		{ method: "patch", url: memberUrl, handler: controller.update },
+		{
+			method: "get",
+			url: collectionUrl,
+			handler: controller.index,
+			action: "index",
+		},
+		{
+			method: "post",
+			url: collectionUrl,
+			handler: controller.create,
+			action: "create",
+		},
+		{ method: "get", url: memberUrl, handler: controller.get, action: "get" },
+		{
+			method: "patch",
+			url: memberUrl,
+			handler: controller.update,
+			action: "update",
+		},
 		{
 			method: "delete",
 			url: memberUrl,
 			handler: controller.delete,
+			action: "delete",
 		},
 	];
 }

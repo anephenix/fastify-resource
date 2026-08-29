@@ -60,6 +60,31 @@ app.register(fastifyResource, {
 	},
 });
 
+app.register(fastifyResource, {
+	model: Possession,
+	resourceList: "gadget",
+	schema: {
+		create: {
+			body: {
+				type: "object",
+				required: ["name"],
+				properties: { name: { type: "string" } },
+			},
+		},
+		get: {
+			response: {
+				200: {
+					type: "object",
+					properties: {
+						id: { type: "number" },
+						name: { type: "string" },
+					},
+				},
+			},
+		},
+	},
+});
+
 // Declare a route
 app.get("/", (request, reply) => {
 	request.log.info("Hello world");

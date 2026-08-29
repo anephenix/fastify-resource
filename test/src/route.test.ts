@@ -23,26 +23,31 @@ describe("route", () => {
 					method: "get",
 					url: "/users/:user_id/posts",
 					handler: controller.index,
+					action: "index",
 				},
 				{
 					method: "post",
 					url: "/users/:user_id/posts",
 					handler: controller.create,
+					action: "create",
 				},
 				{
 					method: "get",
 					url: "/users/:user_id/posts/:id",
 					handler: controller.get,
+					action: "get",
 				},
 				{
 					method: "patch",
 					url: "/users/:user_id/posts/:id",
 					handler: controller.update,
+					action: "update",
 				},
 				{
 					method: "delete",
 					url: "/users/:user_id/posts/:id",
 					handler: controller.delete,
+					action: "delete",
 				},
 			]);
 		});
@@ -59,11 +64,36 @@ describe("route", () => {
 				const resourceList = "user";
 				const routes = resourceRoutes(resourceList, controller);
 				assert.deepStrictEqual(routes, [
-					{ method: "get", url: "/users", handler: controller.index },
-					{ method: "post", url: "/users", handler: controller.create },
-					{ method: "get", url: "/users/:id", handler: controller.get },
-					{ method: "patch", url: "/users/:id", handler: controller.update },
-					{ method: "delete", url: "/users/:id", handler: controller.delete },
+					{
+						method: "get",
+						url: "/users",
+						handler: controller.index,
+						action: "index",
+					},
+					{
+						method: "post",
+						url: "/users",
+						handler: controller.create,
+						action: "create",
+					},
+					{
+						method: "get",
+						url: "/users/:id",
+						handler: controller.get,
+						action: "get",
+					},
+					{
+						method: "patch",
+						url: "/users/:id",
+						handler: controller.update,
+						action: "update",
+					},
+					{
+						method: "delete",
+						url: "/users/:id",
+						handler: controller.delete,
+						action: "delete",
+					},
 				]);
 			});
 		});

@@ -1,4 +1,4 @@
-import type { FastifyReply, FastifyRequest } from "fastify";
+import type { FastifyReply, FastifyRequest, FastifySchema } from "fastify";
 import type { Model, ModelClass } from "objection";
 
 // NOTE - This needs adjusting
@@ -53,6 +53,7 @@ export type Route = {
 	method: Method;
 	url: string;
 	handler: ControllerAction;
+	action: ActionServiceMappingKey;
 };
 
 export type PreHandler = (
@@ -68,6 +69,14 @@ export type PreHandlerOption = PreHandler | Array<PreHandler>;
   { "x-tenant-id": "tenantId" }
 */
 export type HeaderParams = Record<string, string>;
+
+/*
+  Maps each resource action to the Fastify schema (body/querystring/params/
+  headers/response) that should be applied to the route generated for it.
+*/
+export type ResourceSchema = Partial<
+	Record<ActionServiceMappingKey, FastifySchema>
+>;
 
 export type ServiceKey = "getAll" | "create" | "get" | "update" | "delete";
 
@@ -124,4 +133,6 @@ export type FastifyResourcePluginOptions = {
 	preHandler?: PreHandlerOption;
 	// Named request headers to extract and merge into the params object sent to the service
 	headerParams?: HeaderParams;
+	// Per-action Fastify schema (body/querystring/params/headers/response) for validation/serialization
+	schema?: ResourceSchema;
 };

@@ -8,6 +8,7 @@ import type {
 	ControllerAction,
 	FastifyResourcePluginOptions,
 	Method,
+	PreHandlerOption,
 	ResourceOrResourcesList,
 } from "./global.js";
 import { resourceRoutes } from "./route.js";
@@ -48,13 +49,24 @@ function attach({ routes, fastify }: AttachParams): null {
 // Fastify plugin
 const fastifyResource = fastifyPlugin(
 	async (fastify: RealFastifyInstance, opts: FastifyResourcePluginOptions) => {
-		const { model, resourceList, serviceOptions, preHandler, headerParams } =
-			opts;
+		const {
+			model,
+			resourceList,
+			serviceOptions,
+			preHandler,
+			headerParams,
+			schema,
+		} = opts;
 		const service = serviceGenerator(model, serviceOptions);
 		const controller = controllerGenerator(service, headerParams);
 		const routes = resourceRoutes(resourceList, controller);
-		for (const { method, url, handler } of routes) {
-			if (preHandler) {
+		for (const { method, url, handler, action } of routes) {
+			const routeOptions: { preHandler?: PreHandlerOption; schema?: unknown } =
+				{};
+			if (preHandler) routeOptions.preHandler = preHandler;
+			const actionSchema = schema?.[action];
+			if (actionSchema) routeOptions.schema = actionSchema;
+			if (Object.keys(routeOptions).length > 0) {
 				(
 					fastify as unknown as Record<
 						string,
@@ -64,7 +76,7 @@ const fastifyResource = fastifyPlugin(
 							handler?: ControllerAction,
 						) => void
 					>
-				)[method](url, { preHandler }, handler);
+				)[method](url, routeOptions, handler);
 			} else {
 				(
 					fastify as unknown as Record<

@@ -215,6 +215,76 @@ passed through wholesale. Header-derived values are also merged in last, so
 a client can't override one (e.g. `tenantId`) by supplying a same-named
 field in the request body or URL.
 
+### Supporting schema validation
+
+Fastify validates requests (and can serialize responses) using a JSON
+[schema](https://fastify.dev/docs/latest/Reference/Validation-and-Serialization/)
+attached to a route. `fastify-resource` lets you supply one of these schemas
+per generated action - `index`, `create`, `get`, `update` and `delete` - via
+the `schema` option:
+
+```typescript
+app.register(fastifyResource, {
+  model: Person,
+  resourceList: 'person',
+  schema: {
+    create: {
+      body: {
+        type: 'object',
+        required: ['firstName'],
+        properties: {
+          firstName: { type: 'string' },
+          lastName: { type: 'string' },
+        },
+      },
+    },
+    update: {
+      body: {
+        type: 'object',
+        properties: { firstName: { type: 'string' } },
+      },
+    },
+    index: {
+      querystring: {
+        type: 'object',
+        properties: { limit: { type: 'integer' } },
+      },
+    },
+    get: {
+      response: {
+        200: {
+          type: 'object',
+          properties: { id: { type: 'number' }, firstName: { type: 'string' } },
+        },
+      },
+    },
+  },
+});
+```
+
+Each action's schema can use any of Fastify's route-level schema keys -
+`body`, `querystring`, `params`, `headers` and `response` - since `index` maps
+to `GET /people`, `create` to `POST /people`, and `get`/`update`/`delete` to
+the `/people/:id` member route. A `schema` entry is merged into the same
+route options object as `preHandler`, so the two can be used together.
+
+Request validation happens inside Fastify before your resource's generated
+handler runs, so a failing request gets Fastify's own `400` response and
+never reaches the model/service layer. A `response` schema is used for
+serialization - properties not listed are dropped from the output, which is
+useful for hiding columns (e.g. foreign keys) that the model action returns.
+
+For **nested resources** (see below), the member route URL contains one
+`:xxx_id` parameter per ancestor resource plus a final `:id` - a `params`
+schema should account for all of them, not just `id`.
+
+Instance-wide validation concerns - swapping out Ajv via
+`setValidatorCompiler`, customizing error output via
+`setSchemaErrorFormatter`/`setErrorHandler`, or sharing schemas with
+`addSchema`/`$ref` - are configured on the Fastify instance itself (`app`),
+the same way you would for any other Fastify route, since `fastify-resource`
+is a standard Fastify plugin.
+
 ### Creating nested routes
 
 Any REST API tends to implement a hierarchy of resources. Let's say for example

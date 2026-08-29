@@ -220,6 +220,49 @@ describe("Integration tests", () => {
 		});
 	});
 
+	describe("schema option", () => {
+		describe("POST /gadgets", () => {
+			it("should reject a request whose body fails the create schema", async () => {
+				const response = await fetch(`${baseUrl}/gadgets`, {
+					method: "POST",
+					headers: { "Content-Type": "application/json" },
+					body: JSON.stringify({}),
+				});
+				assert.strictEqual(response.status, 400);
+			});
+
+			it("should accept a request whose body satisfies the create schema", async () => {
+				const newGadget = { name: "Grapple hook" };
+				const response = await fetch(`${baseUrl}/gadgets`, {
+					method: "POST",
+					headers: { "Content-Type": "application/json" },
+					body: JSON.stringify(newGadget),
+				});
+				const data = await response.json();
+				assert.strictEqual(response.status, 201);
+				assert.strictEqual(data.name, newGadget.name);
+			});
+		});
+
+		describe("GET /gadgets/:id", () => {
+			it("should serialize the response using the response schema, dropping unlisted fields", async () => {
+				const newGadget = { name: "Utility belt" };
+				const createResponse = await fetch(`${baseUrl}/gadgets`, {
+					method: "POST",
+					headers: { "Content-Type": "application/json" },
+					body: JSON.stringify(newGadget),
+				});
+				const created = await createResponse.json();
+
+				const response = await fetch(`${baseUrl}/gadgets/${created.id}`);
+				const data = await response.json();
+				assert.strictEqual(response.status, 200);
+				assert.deepStrictEqual(data, { id: created.id, name: newGadget.name });
+				assert.ok(!("person_id" in data));
+			});
+		});
+	});
+
 	describe("Nested Self-Referential Resources", () => {
 		describe("GET /people/:person_id/children", () => {
 			it("should return a list of children for a person", async () => {

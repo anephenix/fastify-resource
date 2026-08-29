@@ -34,26 +34,31 @@ describe("index", () => {
 				method: "get",
 				url: "/people",
 				handler: controller.index,
+				action: "index",
 			});
 			assert.deepStrictEqual(routes[1], {
 				method: "post",
 				url: "/people",
 				handler: controller.create,
+				action: "create",
 			});
 			assert.deepStrictEqual(routes[2], {
 				method: "get",
 				url: "/people/:id",
 				handler: controller.get,
+				action: "get",
 			});
 			assert.deepStrictEqual(routes[3], {
 				method: "patch",
 				url: "/people/:id",
 				handler: controller.update,
+				action: "update",
 			});
 			assert.deepStrictEqual(routes[4], {
 				method: "delete",
 				url: "/people/:id",
 				handler: controller.delete,
+				action: "delete",
 			});
 		});
 	});
@@ -199,6 +204,96 @@ describe("index", () => {
 				assert.strictEqual(allRoutes.length, 5);
 				for (const route of allRoutes) {
 					assert.ok(route.options);
+					assert.strictEqual(route.options?.preHandler, preHandler);
+				}
+			});
+		});
+
+		describe("schema option", () => {
+			it("should register only the routes named in the schema option with a schema, merged alongside preHandler", async () => {
+				const recordedRoutes = {
+					get: [] as Array<{
+						url: string;
+						options?: { preHandler?: unknown; schema?: unknown };
+						handler: ControllerAction;
+					}>,
+					post: [] as Array<{
+						url: string;
+						options?: { preHandler?: unknown; schema?: unknown };
+						handler: ControllerAction;
+					}>,
+					patch: [] as Array<{
+						url: string;
+						options?: { preHandler?: unknown; schema?: unknown };
+						handler: ControllerAction;
+					}>,
+					delete: [] as Array<{
+						url: string;
+						options?: { preHandler?: unknown; schema?: unknown };
+						handler: ControllerAction;
+					}>,
+				};
+				const register =
+					(method: keyof typeof recordedRoutes) =>
+					(url: string, optsOrHandler: unknown, handler?: ControllerAction) => {
+						if (typeof optsOrHandler === "function") {
+							recordedRoutes[method].push({
+								url,
+								handler: optsOrHandler as ControllerAction,
+							});
+						} else {
+							recordedRoutes[method].push({
+								url,
+								options: optsOrHandler as {
+									preHandler?: unknown;
+									schema?: unknown;
+								},
+								handler: handler as ControllerAction,
+							});
+						}
+					};
+				const fastify = {
+					get: register("get"),
+					post: register("post"),
+					patch: register("patch"),
+					delete: register("delete"),
+				};
+				const preHandler = async () => {
+					/* noop */
+				};
+				const createBodySchema = {
+					body: {
+						type: "object",
+						required: ["firstName"],
+						properties: { firstName: { type: "string" } },
+					},
+				};
+				const { default: fastifyResource } = await import("../../src/index");
+				// @ts-expect-error: mock fastify instance for plugin test
+				await fastifyResource(fastify, {
+					model: Person,
+					resourceList: ["people"],
+					preHandler,
+					schema: { create: createBodySchema },
+				});
+				assert.strictEqual(recordedRoutes.post.length, 1);
+				assert.strictEqual(
+					recordedRoutes.post[0].options?.schema,
+					createBodySchema,
+				);
+				assert.strictEqual(
+					recordedRoutes.post[0].options?.preHandler,
+					preHandler,
+				);
+				// index/get/update/delete have no schema entry, so should have no schema key
+				const nonCreateRoutes = [
+					...recordedRoutes.get,
+					...recordedRoutes.patch,
+					...recordedRoutes.delete,
+				];
+				for (const route of nonCreateRoutes) {
+					assert.ok(route.options);
+					assert.strictEqual(route.options?.schema, undefined);
 					assert.strictEqual(route.options?.preHandler, preHandler);
 				}
 			});

@@ -191,6 +191,35 @@ describe("Integration tests", () => {
 		});
 	});
 
+	describe("headerParams option", () => {
+		describe("GET /widgets", () => {
+			it("should merge the configured header into the params sent to the service", async () => {
+				const response = await fetch(`${baseUrl}/widgets`, {
+					headers: { "x-tenant-id": "acme" },
+				});
+				const data = await response.json();
+				assert.strictEqual(response.status, 200);
+				assert.deepStrictEqual(data, { tenantId: "acme" });
+			});
+		});
+
+		describe("POST /widgets", () => {
+			it("should not let a body value override the header-derived param", async () => {
+				const response = await fetch(`${baseUrl}/widgets`, {
+					method: "POST",
+					headers: {
+						"Content-Type": "application/json",
+						"x-tenant-id": "acme",
+					},
+					body: JSON.stringify({ tenantId: "spoofed", name: "Stopwatch" }),
+				});
+				const data = await response.json();
+				assert.strictEqual(response.status, 201);
+				assert.deepStrictEqual(data, { tenantId: "acme", name: "Stopwatch" });
+			});
+		});
+	});
+
 	describe("Nested Self-Referential Resources", () => {
 		describe("GET /people/:person_id/children", () => {
 			it("should return a list of children for a person", async () => {

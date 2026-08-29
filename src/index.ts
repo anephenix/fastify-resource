@@ -48,9 +48,10 @@ function attach({ routes, fastify }: AttachParams): null {
 // Fastify plugin
 const fastifyResource = fastifyPlugin(
 	async (fastify: RealFastifyInstance, opts: FastifyResourcePluginOptions) => {
-		const { model, resourceList, serviceOptions, preHandler } = opts;
+		const { model, resourceList, serviceOptions, preHandler, headerParams } =
+			opts;
 		const service = serviceGenerator(model, serviceOptions);
-		const controller = controllerGenerator(service);
+		const controller = controllerGenerator(service, headerParams);
 		const routes = resourceRoutes(resourceList, controller);
 		for (const { method, url, handler } of routes) {
 			if (preHandler) {

@@ -10,6 +10,7 @@ import type {
 	ActionServiceMappingKey,
 	Controller,
 	HandleResponseParams,
+	HeaderParams,
 	Params,
 	Reply,
 	Request,
@@ -79,45 +80,48 @@ const actionServiceMapping: ActionServiceMapping = {
 };
 
 /*
-  Ok, so the idea is this:
+  Extracts the configured request headers (e.g. a bearer token, or a header
+  used to scope queries such as x-tenant-id) and returns them as a params
+  object, keyed by the name given in the headerParams mapping.
 
-  - the function will be named `extractData`
-  - the function will replace getParams
-  - it will create an object
-  - it will then look to extract the data from the request object in the various sections (headers, query, params, body)
-  - it will then put these values into the object, based on what the service wants to receive:
-    - e.g. say you have a service function for performing searches, it may be interested in the query string parameters as filters to search by
-    - e.g. if you are creating a resource, then you have an interest in the body payload to define fields in the resource
-    - e.g. if you are performing a scoped fetch for a nested resource, then you are interested in the url parameters (from a sluggable url)
-    - e.g. if you are performing an action that requires being authorized, then you want to extract a header value for a specific header
-
-    That object is then submitted to the service function as a data object, containing all of the required fields.
+  Header names are looked up case-insensitively, since Fastify normalises
+  incoming header names to lowercase. Headers that are absent from the
+  request are skipped rather than being added as undefined. Multi-value
+  headers (arrays) are not supported and are skipped.
 */
-// const extractData = (req: Request) => {
-//   // Simple and dumb, it doesn't take into account what the service function wants or where to get it from
-//   // What fields to extract, where to extract them from, and how to put them into the object
-//   // That is the bit that need to be worked out
-//   const { headers, query, params, body } = req;
-//   const data = {
-//     ...headers,
-//     ...query,
-//     ...params,
-//   };
-//   if (body) Object.assign(data, body);
-//   return data;
-// }
+const getHeaderParams = (
+	headerParams: HeaderParams | undefined,
+	req: Request,
+): Params => {
+	const data: Params = {};
+	if (!headerParams) return data;
+	for (const [headerName, paramKey] of Object.entries(headerParams)) {
+		const value = req.headers[headerName.toLowerCase()];
+		if (typeof value === "string") data[paramKey] = value;
+	}
+	return data;
+};
 
 /*
   In the case of the create and update actions, we want to get the parameters
-  that are passed in the HTTP API url, and be able to combine them with the 
+  that are passed in the HTTP API url, and be able to combine them with the
   request body so that they can be passed alltogether to the service function.
+
+  Header-derived params (if configured) are merged in last, so that a value
+  taken from a request header (e.g. a tenant id or a user id resolved from a
+  bearer token) cannot be overridden by a client-supplied body/url param of
+  the same name.
 */
-const getParams = (action: ActionServiceMappingKey, req: Request) => {
+const getParams = (
+	action: ActionServiceMappingKey,
+	req: Request,
+	headerParams?: HeaderParams,
+) => {
 	const actionsWithBody = ["create", "update"];
-	if (actionsWithBody.includes(action)) {
-		return Object.assign({}, req.params, req.body);
-	}
-	return req.params;
+	const base = actionsWithBody.includes(action)
+		? Object.assign({}, req.params, req.body)
+		: Object.assign({}, req.params);
+	return Object.assign(base, getHeaderParams(headerParams, req));
 };
 
 /*
@@ -139,11 +143,13 @@ const getResponseData = (
 /*
   This function generates the controller action for the service method.
 */
-const generateAction = (action: ActionServiceMappingKey, service: Service) => {
+const generateAction = (
+	action: ActionServiceMappingKey,
+	service: Service,
+	headerParams?: HeaderParams,
+) => {
 	return async (req: Request, rep: Reply) => {
-		// Note - if we know what the service and action is, perhaps we can lookup a schema for the data that the service function expects
-		// We then need a way to work out where that data would come from in a request object, such as the body, query, params, headers etc
-		const params = getParams(action, req) as Params;
+		const params = getParams(action, req, headerParams) as Params;
 		const method: ServiceKey = actionServiceMapping[action];
 		const { success, data, error } = await service[method](params);
 		const responseData = getResponseData(action, { success, data, error, rep });
@@ -154,12 +160,15 @@ const generateAction = (action: ActionServiceMappingKey, service: Service) => {
 /*
   This function generates the controller for the service.
 */
-const controllerGenerator = (service: Service): Controller => {
+const controllerGenerator = (
+	service: Service,
+	headerParams?: HeaderParams,
+): Controller => {
 	const actions = Object.keys(
 		actionServiceMapping,
 	) as ActionServiceMappingKey[];
 	const actionSetup = (action: ActionServiceMappingKey) => {
-		return [action, generateAction(action, service)];
+		return [action, generateAction(action, service, headerParams)];
 	};
 	const array = actions.map(actionSetup);
 	const controller: Controller = Object.fromEntries(array);

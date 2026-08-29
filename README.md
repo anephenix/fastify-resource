@@ -163,6 +163,58 @@ app.register(fastifyResource, {
 });
 ```
 
+### Supporting request headers
+
+Request headers often carry two different kinds of information: something to
+authenticate/authorize against (like a Bearer token), and something to scope
+a query by (like a tenant id, or a user id resolved from that token). These
+are handled in two different ways.
+
+**Rejecting unauthorized requests** is done with `preHandler`, as shown
+above - check the header and throw/reply before the route handler runs:
+
+```typescript
+const ensureAuth = async (request, reply) => {
+  if (!request.headers.authorization) {
+    reply.code(401);
+    throw new Error("Unauthorized");
+  }
+};
+
+app.register(fastifyResource, {
+  model: Person,
+  resourceList: 'person',
+  preHandler: ensureAuth,
+});
+```
+
+**Getting header values into the service/model layer** (so a query can be
+scoped by them) is done with the `headerParams` option. It's a mapping of
+request header name to the key that value should be assigned under in the
+`params` object passed to the service, and from there to the model action or
+your `customModelAction`:
+
+```typescript
+app.register(fastifyResource, {
+  model: Person,
+  resourceList: 'person',
+  preHandler: ensureAuth,
+  headerParams: {
+    'x-tenant-id': 'tenantId',
+  },
+});
+```
+
+With this in place, a request like `GET /people` with an `x-tenant-id: acme`
+header results in the service being called with `{ tenantId: 'acme' }`
+merged into its params, which a `customModelAction` (see below) can use to
+scope the query.
+
+Only headers you explicitly name are extracted - request headers are never
+passed through wholesale. Header-derived values are also merged in last, so
+a client can't override one (e.g. `tenantId`) by supplying a same-named
+field in the request body or URL.
+
 ### Creating nested routes
 
 Any REST API tends to implement a hierarchy of resources. Let's say for example

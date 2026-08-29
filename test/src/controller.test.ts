@@ -322,4 +322,78 @@ describe("controller", () => {
 			});
 		});
 	});
+
+	describe("headerParams option", () => {
+		let reply: Reply;
+
+		beforeEach(() => {
+			reply = {
+				statusCode: 200,
+				code: (code: number) => {
+					reply.statusCode = code;
+				},
+			};
+		});
+
+		it("should merge configured headers into the params sent to the service", async () => {
+			const request = {
+				params: {},
+				headers: { "x-tenant-id": "acme" },
+			} as unknown as FastifyRequest;
+			const getAll = async (params: Params) => {
+				assert.deepStrictEqual(params, { tenantId: "acme" });
+				return { success: true, data: [] };
+			};
+			const service = generateService({ getAll });
+			const c = controller(service, { "x-tenant-id": "tenantId" });
+			await c.index(request, reply);
+			assert.strictEqual(reply.statusCode, 200);
+		});
+
+		it("should look up headers case-insensitively", async () => {
+			const request = {
+				params: {},
+				headers: { "x-tenant-id": "acme" },
+			} as unknown as FastifyRequest;
+			const getAll = async (params: Params) => {
+				assert.deepStrictEqual(params, { tenantId: "acme" });
+				return { success: true, data: [] };
+			};
+			const service = generateService({ getAll });
+			const c = controller(service, { "X-Tenant-Id": "tenantId" });
+			await c.index(request, reply);
+			assert.strictEqual(reply.statusCode, 200);
+		});
+
+		it("should not add a param for a header that is absent from the request", async () => {
+			const request = {
+				params: {},
+				headers: {},
+			} as unknown as FastifyRequest;
+			const getAll = async (params: Params) => {
+				assert.deepStrictEqual(params, {});
+				return { success: true, data: [] };
+			};
+			const service = generateService({ getAll });
+			const c = controller(service, { "x-tenant-id": "tenantId" });
+			await c.index(request, reply);
+			assert.strictEqual(reply.statusCode, 200);
+		});
+
+		it("should not let a client-supplied body value override a header-derived param", async () => {
+			const request = {
+				params: {},
+				body: { tenantId: "spoofed" },
+				headers: { "x-tenant-id": "acme" },
+			} as unknown as FastifyRequest;
+			const create = async (params: Params) => {
+				assert.deepStrictEqual(params, { tenantId: "acme" });
+				return { success: true, data: {} };
+			};
+			const service = generateService({ create });
+			const c = controller(service, { "x-tenant-id": "tenantId" });
+			await c.create(request, reply);
+			assert.strictEqual(reply.statusCode, 201);
+		});
+	});
 });

@@ -62,6 +62,13 @@ export type PreHandler = (
 
 export type PreHandlerOption = PreHandler | Array<PreHandler>;
 
+/*
+  Maps a request header name to the key it should be assigned under in the
+  params object passed to the service/model layer, e.g.
+  { "x-tenant-id": "tenantId" }
+*/
+export type HeaderParams = Record<string, string>;
+
 export type ServiceKey = "getAll" | "create" | "get" | "update" | "delete";
 
 export type ActionServiceMappingKey = keyof ActionServiceMapping;
@@ -115,4 +122,6 @@ export type FastifyResourcePluginOptions = {
 	// This is a way of specifying advanced options if say setting up a more advanced configuration like loading a relatedQuery for a resource
 	serviceOptions?: ServiceOptions;
 	preHandler?: PreHandlerOption;
+	// Named request headers to extract and merge into the params object sent to the service
+	headerParams?: HeaderParams;
 };

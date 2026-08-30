@@ -87,6 +87,15 @@ app.register(fastifyResource, {
 
 app.register(fastifyResource, {
 	model: Possession,
+	resourceList: "gizmo",
+	paramsTransform: async (params, action) => ({ ...params, action }),
+	serviceOptions: {
+		customModelAction: echoParams,
+	},
+});
+
+app.register(fastifyResource, {
+	model: Possession,
 	resourceList: "gadget",
 	schema: {
 		create: {

@@ -215,6 +215,38 @@ passed through wholesale. Header-derived values are also merged in last, so
 a client can't override one (e.g. `tenantId`) by supplying a same-named
 field in the request body or URL.
 
+### Supporting params/body transformation
+
+Sometimes the params a controller assembles from the URL, request body and
+`headerParams` aren't quite what the service/model layer should receive - a
+password needs hashing before it's stored, a field needs renaming, or a
+value needs to be derived. The `paramsTransform` option lets you supply a
+function that maps/transforms those params before they're sent to the
+service:
+
+```typescript
+import bcrypt from 'bcrypt';
+
+app.register(fastifyResource, {
+  model: Person,
+  resourceList: 'person',
+  paramsTransform: async (params, action) => {
+    if ((action === 'create' || action === 'update') && params.password) {
+      return { ...params, password: await bcrypt.hash(params.password as string, 10) };
+    }
+    return params;
+  },
+});
+```
+
+`paramsTransform` runs for every generated action - the 5 built-in CRUD
+actions and any `customActions` - receiving the fully assembled params (so
+it sees `headerParams`-derived values too) and the action's name (`index`,
+`create`, `get`, `update`, `delete`, or a custom action's `name`), so it can
+branch on which action is running. It's awaited, so returning a `Promise`
+(as above) is supported. Whatever it returns is what's sent to the service,
+and from there to the model action or your `customModelAction`.
+
 ### Supporting schema validation
 
 Fastify validates requests (and can serialize responses) using a JSON

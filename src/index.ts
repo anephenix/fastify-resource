@@ -59,12 +59,14 @@ const fastifyResource = fastifyPlugin(
 			headerParams,
 			schema,
 			customActions,
+			paramsTransform,
 		} = opts;
 		const service = serviceGenerator(model, serviceOptions, customActions);
 		const controller = controllerGenerator(
 			service,
 			headerParams,
 			customActions,
+			paramsTransform,
 		);
 		const routes = resourceRoutes(resourceList, controller, customActions);
 		for (const { method, url, handler, action } of routes) {

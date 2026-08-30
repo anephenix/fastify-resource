@@ -477,6 +477,92 @@ app.register(fastifyResource, {
 The service will then use the `customModelAction` function when it comes to 
 performing the queries for the service.
 
+### Support for custom API routes and actions
+
+The 5 generated CRUD routes won't cover every use case - sometimes you need
+a route that triggers an action rather than reading/writing a single
+resource, e.g. bulk-archiving a list of resources via
+`POST /people/archive`, or a member action like `POST /people/:id/deactivate`.
+The `customActions` option lets you declare extra routes like this, backed
+by their own controller/service actions, alongside the standard CRUD ones.
+
+Each entry in `customActions` needs:
+
+- `name` - used as the key for the generated controller/service function,
+  as the route's `action` (so it can also be targeted by `schema`, see
+  above), and as the `action` argument passed to `customModelAction`.
+- `method` - the HTTP method for the route (`get`, `post`, `patch` or
+  `delete`).
+- `path` - the path segment (no leading slash) appended after the
+  resource's URL, e.g. `"archive"`.
+- `scope` - `"collection"` appends `path` after the collection URL (e.g.
+  `/people/archive`), `"member"` appends it after the member URL (e.g.
+  `/people/:id/archive`). Using a scope rather than a hand-written URL means
+  nested/self-referential resources - whose URLs already contain generated
+  `:xxx_id` params - don't need to be accounted for manually.
+- `successCode` (optional) - HTTP status code to set on success; defaults
+  to `200`.
+- `includeBody` (optional) - whether the request body should be merged into
+  the params sent to the service, alongside `params`/`headerParams`;
+  defaults to `true` for `post`/`patch`, `false` otherwise.
+
+```typescript
+import type { Model, ModelClass } from 'objection';
+import fastifyResource, { modelAction } from '@anephenix/fastify-resource';
+import Person from './models/Person';
+
+/*
+  A customModelAction can handle a mix of custom actions and the standard
+  CRUD ones - anything it doesn't recognise can be delegated back to the
+  library's own `modelAction`, which is exported for this purpose.
+*/
+const archivePeople = async (
+  action: string,
+  model: ModelClass<Model>,
+  params: Params,
+) => {
+  if (action === 'archive') {
+    const { ids } = params as { ids: number[] };
+    await model.query().whereIn('id', ids).patch({ archived: true });
+    return await model.query().whereIn('id', ids);
+  }
+  return await modelAction(action, model, params);
+};
+
+app.register(fastifyResource, {
+  model: Person,
+  resourceList: 'person',
+  serviceOptions: {
+    customModelAction: archivePeople,
+  },
+  customActions: [
+    { name: 'archive', method: 'post', path: 'archive', scope: 'collection' },
+  ],
+});
+```
+
+This registers `POST /people/archive` in addition to the usual 5 routes.
+A request like `POST /people/archive` with a body of `{ "ids": [1, 2, 3] }`
+calls `archivePeople("archive", Person, { ids: [1, 2, 3] })`, and the
+result is returned as the response body with a `200` status.
+
+A member-scoped action works the same way, but the route also carries the
+`:id` (and any ancestor `:xxx_id`) params through to `params`:
+
+```typescript
+customActions: [
+  { name: 'deactivate', method: 'post', path: 'deactivate', scope: 'member' },
+],
+```
+
+registers `POST /people/:id/deactivate`, calling the service (and from
+there `customModelAction`) with `{ id, ...body }`.
+
+`preHandler` and `headerParams` apply to custom action routes the same way
+they do to the generated CRUD ones. `schema` also works the same way -
+just key the schema entry by the custom action's `name` instead of one of
+`index`/`create`/`get`/`update`/`delete`.
+
 ### Tests
 
 ```shell

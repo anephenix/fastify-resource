@@ -298,5 +298,93 @@ describe("index", () => {
 				}
 			});
 		});
+
+		describe("customActions option", () => {
+			it("should register the extra route(s), applying schema/preHandler the same way as the CRUD routes", async () => {
+				const recordedRoutes = {
+					get: [] as Array<{
+						url: string;
+						options?: { preHandler?: unknown; schema?: unknown };
+						handler: ControllerAction;
+					}>,
+					post: [] as Array<{
+						url: string;
+						options?: { preHandler?: unknown; schema?: unknown };
+						handler: ControllerAction;
+					}>,
+					patch: [] as Array<{
+						url: string;
+						options?: { preHandler?: unknown; schema?: unknown };
+						handler: ControllerAction;
+					}>,
+					delete: [] as Array<{
+						url: string;
+						options?: { preHandler?: unknown; schema?: unknown };
+						handler: ControllerAction;
+					}>,
+				};
+				const register =
+					(method: keyof typeof recordedRoutes) =>
+					(url: string, optsOrHandler: unknown, handler?: ControllerAction) => {
+						if (typeof optsOrHandler === "function") {
+							recordedRoutes[method].push({
+								url,
+								handler: optsOrHandler as ControllerAction,
+							});
+						} else {
+							recordedRoutes[method].push({
+								url,
+								options: optsOrHandler as {
+									preHandler?: unknown;
+									schema?: unknown;
+								},
+								handler: handler as ControllerAction,
+							});
+						}
+					};
+				const fastify = {
+					get: register("get"),
+					post: register("post"),
+					patch: register("patch"),
+					delete: register("delete"),
+				};
+				const preHandler = async () => {
+					/* noop */
+				};
+				const renameSchema = {
+					body: {
+						type: "object",
+						required: ["ids", "firstName"],
+						properties: {
+							ids: { type: "array", items: { type: "number" } },
+							firstName: { type: "string" },
+						},
+					},
+				};
+				const { default: fastifyResource } = await import("../../src/index");
+				// @ts-expect-error: mock fastify instance for plugin test
+				await fastifyResource(fastify, {
+					model: Person,
+					resourceList: ["people"],
+					preHandler,
+					schema: { rename: renameSchema },
+					customActions: [
+						{
+							name: "rename",
+							method: "post",
+							path: "rename",
+							scope: "collection",
+						},
+					],
+				});
+				assert.strictEqual(recordedRoutes.post.length, 2);
+				const renameRoute = recordedRoutes.post.find(
+					(route) => route.url === "/people/rename",
+				);
+				assert.ok(renameRoute);
+				assert.strictEqual(renameRoute?.options?.schema, renameSchema);
+				assert.strictEqual(renameRoute?.options?.preHandler, preHandler);
+			});
+		});
 	});
 });

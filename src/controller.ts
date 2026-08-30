@@ -9,6 +9,8 @@ import type {
 	ActionServiceMapping,
 	ActionServiceMappingKey,
 	Controller,
+	ControllerAction,
+	CustomActionDefinition,
 	HandleResponseParams,
 	HeaderParams,
 	Params,
@@ -103,9 +105,10 @@ const getHeaderParams = (
 };
 
 /*
-  In the case of the create and update actions, we want to get the parameters
-  that are passed in the HTTP API url, and be able to combine them with the
-  request body so that they can be passed alltogether to the service function.
+  In the case of actions that accept a request body (create/update, and any
+  custom action opted into it), we want to get the parameters that are
+  passed in the HTTP API url, and be able to combine them with the request
+  body so that they can be passed alltogether to the service function.
 
   Header-derived params (if configured) are merged in last, so that a value
   taken from a request header (e.g. a tenant id or a user id resolved from a
@@ -113,16 +116,17 @@ const getHeaderParams = (
   the same name.
 */
 const getParams = (
-	action: ActionServiceMappingKey,
 	req: Request,
+	includeBody: boolean,
 	headerParams?: HeaderParams,
 ) => {
-	const actionsWithBody = ["create", "update"];
-	const base = actionsWithBody.includes(action)
+	const base = includeBody
 		? Object.assign({}, req.params, req.body)
 		: Object.assign({}, req.params);
 	return Object.assign(base, getHeaderParams(headerParams, req));
 };
+
+const actionsWithBody: Array<ActionServiceMappingKey> = ["create", "update"];
 
 /*
   This function return the correct response data for the controller action.
@@ -149,11 +153,39 @@ const generateAction = (
 	headerParams?: HeaderParams,
 ) => {
 	return async (req: Request, rep: Reply) => {
-		const params = getParams(action, req, headerParams) as Params;
+		const includeBody = actionsWithBody.includes(action);
+		const params = getParams(req, includeBody, headerParams) as Params;
 		const method: ServiceKey = actionServiceMapping[action];
 		const { success, data, error } = await service[method](params);
 		const responseData = getResponseData(action, { success, data, error, rep });
 		return handleResponse(responseData);
+	};
+};
+
+/*
+  HTTP methods that carry a request body by convention - used as the default
+  for a custom action's `includeBody` when it isn't set explicitly.
+*/
+const methodsWithBodyByDefault = ["post", "patch"];
+
+/*
+  This function generates the controller action for a custom action, calling
+  the service function registered under the same name (see
+  serviceGenerator's handling of `customActions`). It reuses the same
+  param-extraction and response-handling as the built-in CRUD actions.
+*/
+const generateCustomAction = (
+	customAction: CustomActionDefinition,
+	service: Service,
+	headerParams?: HeaderParams,
+) => {
+	const { name, method, includeBody, successCode } = customAction;
+	const shouldIncludeBody =
+		includeBody ?? methodsWithBodyByDefault.includes(method);
+	return async (req: Request, rep: Reply) => {
+		const params = getParams(req, shouldIncludeBody, headerParams) as Params;
+		const { success, data, error } = await service[name](params);
+		return handleResponse({ success, data, error, rep, successCode });
 	};
 };
 
@@ -163,6 +195,7 @@ const generateAction = (
 const controllerGenerator = (
 	service: Service,
 	headerParams?: HeaderParams,
+	customActions?: Array<CustomActionDefinition>,
 ): Controller => {
 	const actions = Object.keys(
 		actionServiceMapping,
@@ -172,6 +205,15 @@ const controllerGenerator = (
 	};
 	const array = actions.map(actionSetup);
 	const controller: Controller = Object.fromEntries(array);
+	if (customActions) {
+		for (const customAction of customActions) {
+			controller[customAction.name] = generateCustomAction(
+				customAction,
+				service,
+				headerParams,
+			) as unknown as ControllerAction;
+		}
+	}
 	return controller;
 };
 

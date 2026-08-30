@@ -6,8 +6,10 @@ import type {
 	ModelClass,
 } from "objection";
 import type {
+	CustomActionDefinition,
 	ErrorOfSomeKind,
 	Params,
+	Service,
 	ServiceOptions,
 	ServiceResponse,
 } from "./global.js";
@@ -54,6 +56,8 @@ const modelAction = async (
 			}
 			return params.id;
 		}
+		default:
+			throw new Error(`Unknown action: ${action}`);
 	}
 };
 
@@ -147,14 +151,22 @@ const serviceFunction = (
 function serviceGenerator(
 	model: ModelClass<Model>,
 	serviceOptions?: ServiceOptions,
-) {
-	return {
+	customActions?: Array<CustomActionDefinition>,
+): Service {
+	const service: Service = {
 		getAll: serviceFunction("getAll", model, serviceOptions),
 		create: serviceFunction("create", model, serviceOptions),
 		get: serviceFunction("get", model, serviceOptions),
 		update: serviceFunction("update", model, serviceOptions),
 		delete: serviceFunction("delete", model, serviceOptions),
 	};
+	if (customActions) {
+		for (const { name } of customActions) {
+			service[name] = serviceFunction(name, model, serviceOptions);
+		}
+	}
+	return service;
 }
 
 export default serviceGenerator;
+export { modelAction };

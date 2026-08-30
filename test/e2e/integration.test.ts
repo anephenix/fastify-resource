@@ -115,6 +115,44 @@ describe("Integration tests", () => {
 		});
 	});
 
+	describe("customActions option", () => {
+		describe("POST /people/rename", () => {
+			it("should trigger the custom action against the list of ids given in the request body", async () => {
+				const createOne = await fetch(`${baseUrl}/people`, {
+					method: "POST",
+					headers: { "Content-Type": "application/json" },
+					body: JSON.stringify({ firstName: "Temp1" }),
+				});
+				const createTwo = await fetch(`${baseUrl}/people`, {
+					method: "POST",
+					headers: { "Content-Type": "application/json" },
+					body: JSON.stringify({ firstName: "Temp2" }),
+				});
+				const personOne = await createOne.json();
+				const personTwo = await createTwo.json();
+
+				const response = await fetch(`${baseUrl}/people/rename`, {
+					method: "POST",
+					headers: { "Content-Type": "application/json" },
+					body: JSON.stringify({
+						ids: [personOne.id, personTwo.id],
+						firstName: "Renamed",
+					}),
+				});
+				const data = await response.json();
+				assert.strictEqual(response.status, 200);
+				assert.strictEqual(response.headers.get("x-prehandler"), "true");
+				assert.strictEqual(data.length, 2);
+				for (const person of data) {
+					assert.strictEqual(person.firstName, "Renamed");
+				}
+
+				const reloaded = await Person.query().findById(personOne.id);
+				assert.strictEqual(reloaded?.firstName, "Renamed");
+			});
+		});
+	});
+
 	describe("nested resources", () => {
 		describe("GET /people/:person_id/possessions", () => {
 			it("should return a list of possessions for a person", async () => {

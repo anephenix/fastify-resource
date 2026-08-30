@@ -6,13 +6,14 @@ import type { Model, ModelClass } from "objection";
 import controllerGenerator from "./controller.js";
 import type {
 	ControllerAction,
+	CustomActionDefinition,
 	FastifyResourcePluginOptions,
 	Method,
 	PreHandlerOption,
 	ResourceOrResourcesList,
 } from "./global.js";
 import { resourceRoutes } from "./route.js";
-import serviceGenerator from "./service.js";
+import serviceGenerator, { modelAction } from "./service.js";
 
 type RouteMapParams = {
 	method: Method;
@@ -32,10 +33,11 @@ type AttachParams = {
 function resource(
 	model: ModelClass<Model>,
 	resourceList: ResourceOrResourcesList,
+	customActions?: Array<CustomActionDefinition>,
 ) {
-	const service = serviceGenerator(model);
-	const controller = controllerGenerator(service);
-	const routes = resourceRoutes(resourceList, controller);
+	const service = serviceGenerator(model, undefined, customActions);
+	const controller = controllerGenerator(service, undefined, customActions);
+	const routes = resourceRoutes(resourceList, controller, customActions);
 	return { routes, controller, service };
 }
 
@@ -56,10 +58,15 @@ const fastifyResource = fastifyPlugin(
 			preHandler,
 			headerParams,
 			schema,
+			customActions,
 		} = opts;
-		const service = serviceGenerator(model, serviceOptions);
-		const controller = controllerGenerator(service, headerParams);
-		const routes = resourceRoutes(resourceList, controller);
+		const service = serviceGenerator(model, serviceOptions, customActions);
+		const controller = controllerGenerator(
+			service,
+			headerParams,
+			customActions,
+		);
+		const routes = resourceRoutes(resourceList, controller, customActions);
 		for (const { method, url, handler, action } of routes) {
 			const routeOptions: { preHandler?: PreHandlerOption; schema?: unknown } =
 				{};
@@ -96,6 +103,7 @@ export default fastifyResource;
 export {
 	attach,
 	controllerGenerator,
+	modelAction,
 	resource,
 	resourceRoutes,
 	serviceGenerator,

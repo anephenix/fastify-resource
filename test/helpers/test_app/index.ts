@@ -2,7 +2,7 @@ import type { FastifyReply, FastifyRequest } from "fastify";
 import fastify from "fastify";
 import type { Model, ModelClass } from "objection";
 import type { Params } from "../../../src/global";
-import fastifyResource from "../../../src/index";
+import fastifyResource, { modelAction } from "../../../src/index";
 import Person from "./models/Person";
 import Possession from "./models/Possession";
 
@@ -25,10 +25,35 @@ const echoParams = async (
 	return params;
 };
 
+/*
+  Demonstrates a custom action that operates on a list of resources (a bulk
+  "rename" triggered via POST /people/rename), composed alongside the
+  standard CRUD actions by delegating to the exported `modelAction` for
+  anything that isn't the custom action itself.
+*/
+const renamePeople = async (
+	action: string,
+	model: ModelClass<Model>,
+	params: Params,
+) => {
+	if (action === "rename") {
+		const { ids, firstName } = params as { ids: number[]; firstName: string };
+		await model.query().whereIn("id", ids).patch({ firstName });
+		return await model.query().whereIn("id", ids);
+	}
+	return await modelAction(action, model, params);
+};
+
 app.register(fastifyResource, {
 	model: Person,
 	resourceList: "person",
 	preHandler: addPreHandlerHeader,
+	serviceOptions: {
+		customModelAction: renamePeople,
+	},
+	customActions: [
+		{ name: "rename", method: "post", path: "rename", scope: "collection" },
+	],
 });
 
 app.register(fastifyResource, {

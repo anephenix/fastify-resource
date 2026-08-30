@@ -16,11 +16,11 @@
 - [x] Implement support for self-referential models in nested resources
 - [x] Workout strategy for supporting request headers (e.g. bearer-token for authentication/authorization)
 - [x] Workout strategy for supporting schema validation in fastify
+- [x] Workout strategy for custom API routes and controller/service actions to support that
+- [x] Workout strategy for supporting preHandlers in fastify
 
 ## Next
 
-- [ ] Workout strategy for supporting preHandlers in fastify
-- [ ] Workout strategy for custom API routes and controller/service actions to support that
 - [ ] Workout strategy for implementing referential integrity on HTTP requests to nested resources
 - [ ] Workout strategy for being able to map/transform params/body passed from controller action to service
 - [ ] Workout strategy for abstracting Objection.js so that a Mongoose model for MongoDB could be used for example

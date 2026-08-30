@@ -323,6 +323,156 @@ describe("controller", () => {
 		});
 	});
 
+	describe("customActions option", () => {
+		let reply: Reply;
+
+		beforeEach(() => {
+			reply = {
+				statusCode: 200,
+				code: (code: number) => {
+					reply.statusCode = code;
+				},
+			};
+		});
+
+		it("should generate a controller action that calls the service function registered under the custom action's name", async () => {
+			const request = {
+				params: {},
+				body: { ids: [1, 2], name: "Renamed" },
+			} as FastifyRequest;
+			const service = generateService({});
+			const rename = async (params: Params) => {
+				assert.deepStrictEqual(params, { ids: [1, 2], name: "Renamed" });
+				return { success: true, data: { renamed: 2 } };
+			};
+			(service as Service).rename = rename;
+			const c = controller(service, undefined, [
+				{ name: "rename", method: "post", path: "rename", scope: "collection" },
+			]);
+			assert.ok(c.rename);
+			const result = await c.rename(request, reply);
+			assert.strictEqual(reply.statusCode, 200);
+			assert.deepStrictEqual(result, { renamed: 2 });
+		});
+
+		it("should not merge the request body into params for a custom action whose method is get", async () => {
+			const request = {
+				params: { id: "42" },
+				body: { ignored: true },
+			} as FastifyRequest;
+			const service = generateService({});
+			const summary = async (params: Params) => {
+				assert.deepStrictEqual(params, { id: "42" });
+				return { success: true, data: { total: 3 } };
+			};
+			(service as Service).summary = summary;
+			const c = controller(service, undefined, [
+				{ name: "summary", method: "get", path: "summary", scope: "member" },
+			]);
+			const result = await c.summary(request, reply);
+			assert.strictEqual(reply.statusCode, 200);
+			assert.deepStrictEqual(result, { total: 3 });
+		});
+
+		it("should merge the request body into params for a custom action whose method is post, even without an explicit includeBody", async () => {
+			const request = {
+				params: { id: "42" },
+				body: { note: "hello" },
+			} as FastifyRequest;
+			const service = generateService({});
+			const archive = async (params: Params) => {
+				assert.deepStrictEqual(params, { id: "42", note: "hello" });
+				return { success: true, data: { id: "42", archived: true } };
+			};
+			(service as Service).archive = archive;
+			const c = controller(service, undefined, [
+				{ name: "archive", method: "post", path: "archive", scope: "member" },
+			]);
+			const result = await c.archive(request, reply);
+			assert.strictEqual(reply.statusCode, 200);
+			assert.deepStrictEqual(result, { id: "42", archived: true });
+		});
+
+		it("should respect an explicit includeBody: false override even for a post method", async () => {
+			const request = {
+				params: { id: "42" },
+				body: { ignored: true },
+			} as FastifyRequest;
+			const service = generateService({});
+			const ping = async (params: Params) => {
+				assert.deepStrictEqual(params, { id: "42" });
+				return { success: true, data: "pong" };
+			};
+			(service as Service).ping = ping;
+			const c = controller(service, undefined, [
+				{
+					name: "ping",
+					method: "post",
+					path: "ping",
+					scope: "member",
+					includeBody: false,
+				},
+			]);
+			const result = await c.ping(request, reply);
+			assert.strictEqual(reply.statusCode, 200);
+			assert.strictEqual(result, "pong");
+		});
+
+		it("should set the reply status code to a configured successCode", async () => {
+			const request = { params: {}, body: {} } as FastifyRequest;
+			const service = generateService({});
+			const bulkCreate = async () => {
+				return { success: true, data: [] };
+			};
+			(service as Service).bulkCreate = bulkCreate;
+			const c = controller(service, undefined, [
+				{
+					name: "bulkCreate",
+					method: "post",
+					path: "bulk",
+					scope: "collection",
+					successCode: 201,
+				},
+			]);
+			await c.bulkCreate(request, reply);
+			assert.strictEqual(reply.statusCode, 201);
+		});
+
+		it("should return a 404 response when the custom action's service function reports Not found", async () => {
+			const request = { params: { id: "99" } } as FastifyRequest;
+			const service = generateService({});
+			const archive = async () => {
+				return { success: false, error: new Error("Not found") };
+			};
+			(service as Service).archive = archive;
+			const c = controller(service, undefined, [
+				{ name: "archive", method: "post", path: "archive", scope: "member" },
+			]);
+			const result = await c.archive(request, reply);
+			assert.strictEqual(reply.statusCode, 404);
+			assert.strictEqual(result, "Not found");
+		});
+
+		it("should merge headerParams into the params sent to the custom action's service function", async () => {
+			const request = {
+				params: {},
+				body: {},
+				headers: { "x-tenant-id": "acme" },
+			} as unknown as FastifyRequest;
+			const service = generateService({});
+			const rename = async (params: Params) => {
+				assert.deepStrictEqual(params, { tenantId: "acme" });
+				return { success: true, data: {} };
+			};
+			(service as Service).rename = rename;
+			const c = controller(service, { "x-tenant-id": "tenantId" }, [
+				{ name: "rename", method: "post", path: "rename", scope: "collection" },
+			]);
+			await c.rename(request, reply);
+			assert.strictEqual(reply.statusCode, 200);
+		});
+	});
+
 	describe("headerParams option", () => {
 		let reply: Reply;
 

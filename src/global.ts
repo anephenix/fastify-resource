@@ -20,7 +20,7 @@ export type Service = {
 	get: (params: Params) => Promise<ServiceResponse>;
 	update: (params: Params) => Promise<ServiceResponse>;
 	delete: (params: Params) => Promise<ServiceResponse>;
-};
+} & Record<string, (params: Params) => Promise<ServiceResponse>>;
 
 export type Request = FastifyRequest;
 
@@ -45,7 +45,7 @@ export type Controller = {
 	get: ControllerAction;
 	update: ControllerAction;
 	delete: ControllerAction;
-};
+} & Record<string, ControllerAction>;
 
 export type Method = "get" | "post" | "patch" | "delete";
 
@@ -53,7 +53,38 @@ export type Route = {
 	method: Method;
 	url: string;
 	handler: ControllerAction;
-	action: ActionServiceMappingKey;
+	// The 5 generated CRUD actions use ActionServiceMappingKey; a custom
+	// action (see CustomActionDefinition) contributes its own name here.
+	action: ActionServiceMappingKey | string;
+};
+
+/*
+  Where a custom action's route is mounted relative to the resource -
+  "collection" appends after the collection URL (e.g. /people/rename),
+  "member" appends after the member URL (e.g. /people/:id/archive). Using a
+  scope rather than a hand-built URL means nested/self-referential resources
+  (which have generated :xxx_id params) don't need to be accounted for
+  manually.
+*/
+export type CustomActionScope = "collection" | "member";
+
+/*
+  Declares a custom API route (outside of the standard index/create/get/
+  update/delete CRUD set) and the controller/service action that backs it.
+  `name` is used as the key for the generated controller and service
+  functions, as the `action` on the generated Route, and as the key to look
+  up a per-action `schema` entry - the same way the built-in CRUD actions do.
+*/
+export type CustomActionDefinition = {
+	name: string;
+	method: Method;
+	// Path segment (no leading slash) appended after the collection/member URL, e.g. "rename"
+	path: string;
+	scope: CustomActionScope;
+	// HTTP status code to set on a successful response; defaults to 200
+	successCode?: StatusCode;
+	// Whether to merge the request body into params; defaults to true for post/patch, false otherwise
+	includeBody?: boolean;
 };
 
 export type PreHandler = (
@@ -73,10 +104,10 @@ export type HeaderParams = Record<string, string>;
 /*
   Maps each resource action to the Fastify schema (body/querystring/params/
   headers/response) that should be applied to the route generated for it.
+  Keyed by the 5 built-in CRUD action names, or by a custom action's `name`
+  (see CustomActionDefinition).
 */
-export type ResourceSchema = Partial<
-	Record<ActionServiceMappingKey, FastifySchema>
->;
+export type ResourceSchema = Partial<Record<string, FastifySchema>>;
 
 export type ServiceKey = "getAll" | "create" | "get" | "update" | "delete";
 
@@ -135,4 +166,6 @@ export type FastifyResourcePluginOptions = {
 	headerParams?: HeaderParams;
 	// Per-action Fastify schema (body/querystring/params/headers/response) for validation/serialization
 	schema?: ResourceSchema;
+	// Extra routes (outside of the standard CRUD set) and the controller/service actions that back them
+	customActions?: Array<CustomActionDefinition>;
 };

@@ -125,6 +125,103 @@ describe("route", () => {
 		});
 	});
 
+	describe("customActions option", () => {
+		const controller = {
+			index: () => {},
+			get: () => {},
+			create: () => {},
+			update: () => {},
+			delete: () => {},
+			rename: () => {},
+			archive: () => {},
+		};
+
+		describe("when a custom action has collection scope", () => {
+			it("should append the route after the collection url", () => {
+				const resourceList = "person";
+				const customActions = [
+					{
+						name: "rename",
+						method: "post" as const,
+						path: "rename",
+						scope: "collection" as const,
+					},
+				];
+				const routes = resourceRoutes(resourceList, controller, customActions);
+				assert.strictEqual(routes.length, 6);
+				assert.deepStrictEqual(routes[5], {
+					method: "post",
+					url: "/people/rename",
+					handler: controller.rename,
+					action: "rename",
+				});
+			});
+		});
+
+		describe("when a custom action has member scope", () => {
+			it("should append the route after the member url", () => {
+				const resourceList = "person";
+				const customActions = [
+					{
+						name: "archive",
+						method: "post" as const,
+						path: "archive",
+						scope: "member" as const,
+					},
+				];
+				const routes = resourceRoutes(resourceList, controller, customActions);
+				assert.strictEqual(routes.length, 6);
+				assert.deepStrictEqual(routes[5], {
+					method: "post",
+					url: "/people/:id/archive",
+					handler: controller.archive,
+					action: "archive",
+				});
+			});
+		});
+
+		describe("when the resource is nested", () => {
+			it("should append the custom route after the fully nested collection/member url", () => {
+				const resourceList = ["person", "possession"];
+				const customActions = [
+					{
+						name: "rename",
+						method: "post" as const,
+						path: "rename",
+						scope: "collection" as const,
+					},
+					{
+						name: "archive",
+						method: "post" as const,
+						path: "archive",
+						scope: "member" as const,
+					},
+				];
+				const routes = resourceRoutes(resourceList, controller, customActions);
+				assert.deepStrictEqual(routes[5], {
+					method: "post",
+					url: "/people/:person_id/possessions/rename",
+					handler: controller.rename,
+					action: "rename",
+				});
+				assert.deepStrictEqual(routes[6], {
+					method: "post",
+					url: "/people/:person_id/possessions/:id/archive",
+					handler: controller.archive,
+					action: "archive",
+				});
+			});
+		});
+
+		describe("when no customActions are given", () => {
+			it("should only return the 5 standard CRUD routes", () => {
+				const resourceList = "person";
+				const routes = resourceRoutes(resourceList, controller);
+				assert.strictEqual(routes.length, 5);
+			});
+		});
+	});
+
 	describe("#generateRoutePart", () => {
 		describe("when passed a collection type", () => {
 			it("should return the plural form of the resource name as a url route", () => {

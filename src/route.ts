@@ -3,6 +3,7 @@
 import pluralize from "pluralize";
 import type {
 	Controller,
+	CustomActionDefinition,
 	ResourceOrResourcesList,
 	ResourcesList,
 	Route,
@@ -47,6 +48,7 @@ function generateRoute(resourceList: ResourcesList, finalType: RouteType) {
 function resourceRoutes(
 	resourceOrResourceList: ResourceOrResourcesList,
 	controller: Controller,
+	customActions?: Array<CustomActionDefinition>,
 ): Array<Route> {
 	const resourceList = Array.isArray(resourceOrResourceList)
 		? resourceOrResourceList
@@ -54,7 +56,7 @@ function resourceRoutes(
 	const collectionUrl = generateRoute(resourceList, "collection");
 	const memberUrl = generateRoute(resourceList, "member");
 
-	return [
+	const routes: Array<Route> = [
 		{
 			method: "get",
 			url: collectionUrl,
@@ -81,6 +83,20 @@ function resourceRoutes(
 			action: "delete",
 		},
 	];
+
+	if (customActions) {
+		for (const { name, method, path, scope } of customActions) {
+			const baseUrl = scope === "collection" ? collectionUrl : memberUrl;
+			routes.push({
+				method,
+				url: `${baseUrl}/${path}`,
+				handler: controller[name],
+				action: name,
+			});
+		}
+	}
+
+	return routes;
 }
 
 export { generateRoute, generateRoutePart, resourceRoutes };

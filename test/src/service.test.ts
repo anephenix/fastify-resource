@@ -2,7 +2,7 @@ import assert from "node:assert";
 import { DBError, type Model, type ModelClass } from "objection";
 import { afterAll, beforeAll, describe, it } from "vitest";
 import type { Params, ServiceOptions } from "../../src/global.js";
-import serviceGenerator from "../../src/service";
+import serviceGenerator, { modelAction } from "../../src/service";
 import { unitTestDB } from "../helpers/knexConnections";
 import Employee from "../helpers/unit_tests/models/Employee";
 import { createSchema } from "../helpers/unit_tests/setupDatabase";
@@ -219,6 +219,86 @@ describe("service", () => {
 					assert.deepEqual(data, gary.reports);
 					assert.strictEqual(error, undefined);
 				});
+			});
+		});
+
+		describe("customActions option", () => {
+			it("should register a service function for each custom action, keyed by its name", () => {
+				const service = serviceGenerator(Employee, undefined, [
+					{
+						name: "rename",
+						method: "post",
+						path: "rename",
+						scope: "collection",
+					},
+				]);
+				assert.ok(service.rename);
+			});
+
+			it("should call customModelAction with the custom action's name", async () => {
+				let called = false;
+				const customModelAction: ServiceOptions["customModelAction"] = async (
+					action: string,
+					model: ModelClass<Model>,
+					params: Params,
+				) => {
+					if (action === "rename") {
+						called = true;
+						return await model.query().where(params);
+					}
+					return null;
+				};
+				const service = serviceGenerator(Employee, { customModelAction }, [
+					{
+						name: "rename",
+						method: "post",
+						path: "rename",
+						scope: "collection",
+					},
+				]);
+				const { success, error } = await service.rename({});
+				assert.strictEqual(success, true);
+				assert.strictEqual(error, undefined);
+				assert.strictEqual(called, true);
+			});
+
+			it("should fail with an error when a customModelAction is not provided for a custom action", async () => {
+				const service = serviceGenerator(Employee, undefined, [
+					{
+						name: "rename",
+						method: "post",
+						path: "rename",
+						scope: "collection",
+					},
+				]);
+				const { success, error } = await service.rename({});
+				assert.strictEqual(success, false);
+				assert.deepStrictEqual(error, new Error("Unknown action: rename"));
+			});
+
+			it("should let a customModelAction delegate back to the exported modelAction for the standard CRUD actions", async () => {
+				const customModelAction: ServiceOptions["customModelAction"] = async (
+					action: string,
+					model: ModelClass<Model>,
+					params: Params,
+				) => {
+					if (action === "rename") {
+						return { renamed: true };
+					}
+					return await modelAction(action, model, params);
+				};
+				const service = serviceGenerator(Employee, { customModelAction }, [
+					{
+						name: "rename",
+						method: "post",
+						path: "rename",
+						scope: "collection",
+					},
+				]);
+				const created = await service.create({ name: "Delegate" });
+				assert.strictEqual(created.success, true);
+				const renamed = await service.rename({});
+				assert.deepStrictEqual(renamed.data, { renamed: true });
 			});
 		});
 	});

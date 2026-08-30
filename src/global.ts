@@ -102,6 +102,19 @@ export type PreHandlerOption = PreHandler | Array<PreHandler>;
 export type HeaderParams = Record<string, string>;
 
 /*
+  Maps/transforms the params object (url + body + headerParams, already
+  merged) into the params that should actually be sent to the service/model
+  layer - e.g. hashing a password, renaming a field, or deriving a value.
+  Runs for every generated action (CRUD and custom), after the headerParams
+  merge and just before the service is called, and is awaited so async work
+  is supported.
+*/
+export type ParamsTransform = (
+	params: Params,
+	action: string,
+) => Params | Promise<Params>;
+
+/*
   Maps each resource action to the Fastify schema (body/querystring/params/
   headers/response) that should be applied to the route generated for it.
   Keyed by the 5 built-in CRUD action names, or by a custom action's `name`
@@ -164,6 +177,8 @@ export type FastifyResourcePluginOptions = {
 	preHandler?: PreHandlerOption;
 	// Named request headers to extract and merge into the params object sent to the service
 	headerParams?: HeaderParams;
+	// Maps/transforms the assembled params object before it's sent to the service
+	paramsTransform?: ParamsTransform;
 	// Per-action Fastify schema (body/querystring/params/headers/response) for validation/serialization
 	schema?: ResourceSchema;
 	// Extra routes (outside of the standard CRUD set) and the controller/service actions that back them

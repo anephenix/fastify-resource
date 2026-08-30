@@ -14,6 +14,7 @@ import type {
 	HandleResponseParams,
 	HeaderParams,
 	Params,
+	ParamsTransform,
 	Reply,
 	Request,
 	Service,
@@ -151,10 +152,14 @@ const generateAction = (
 	action: ActionServiceMappingKey,
 	service: Service,
 	headerParams?: HeaderParams,
+	paramsTransform?: ParamsTransform,
 ) => {
 	return async (req: Request, rep: Reply) => {
 		const includeBody = actionsWithBody.includes(action);
-		const params = getParams(req, includeBody, headerParams) as Params;
+		const rawParams = getParams(req, includeBody, headerParams) as Params;
+		const params = paramsTransform
+			? await paramsTransform(rawParams, action)
+			: rawParams;
 		const method: ServiceKey = actionServiceMapping[action];
 		const { success, data, error } = await service[method](params);
 		const responseData = getResponseData(action, { success, data, error, rep });
@@ -178,12 +183,16 @@ const generateCustomAction = (
 	customAction: CustomActionDefinition,
 	service: Service,
 	headerParams?: HeaderParams,
+	paramsTransform?: ParamsTransform,
 ) => {
 	const { name, method, includeBody, successCode } = customAction;
 	const shouldIncludeBody =
 		includeBody ?? methodsWithBodyByDefault.includes(method);
 	return async (req: Request, rep: Reply) => {
-		const params = getParams(req, shouldIncludeBody, headerParams) as Params;
+		const rawParams = getParams(req, shouldIncludeBody, headerParams) as Params;
+		const params = paramsTransform
+			? await paramsTransform(rawParams, name)
+			: rawParams;
 		const { success, data, error } = await service[name](params);
 		return handleResponse({ success, data, error, rep, successCode });
 	};
@@ -196,12 +205,16 @@ const controllerGenerator = (
 	service: Service,
 	headerParams?: HeaderParams,
 	customActions?: Array<CustomActionDefinition>,
+	paramsTransform?: ParamsTransform,
 ): Controller => {
 	const actions = Object.keys(
 		actionServiceMapping,
 	) as ActionServiceMappingKey[];
 	const actionSetup = (action: ActionServiceMappingKey) => {
-		return [action, generateAction(action, service, headerParams)];
+		return [
+			action,
+			generateAction(action, service, headerParams, paramsTransform),
+		];
 	};
 	const array = actions.map(actionSetup);
 	const controller: Controller = Object.fromEntries(array);
@@ -211,6 +224,7 @@ const controllerGenerator = (
 				customAction,
 				service,
 				headerParams,
+				paramsTransform,
 			) as unknown as ControllerAction;
 		}
 	}

@@ -301,6 +301,30 @@ describe("Integration tests", () => {
 		});
 	});
 
+	describe("paramsTransform option", () => {
+		describe("GET /gizmos", () => {
+			it("should send the params produced by paramsTransform to the service", async () => {
+				const response = await fetch(`${baseUrl}/gizmos`);
+				const data = await response.json();
+				assert.strictEqual(response.status, 200);
+				assert.deepStrictEqual(data, { action: "index" });
+			});
+		});
+
+		describe("POST /gizmos", () => {
+			it("should merge the transform's added params alongside the request body", async () => {
+				const response = await fetch(`${baseUrl}/gizmos`, {
+					method: "POST",
+					headers: { "Content-Type": "application/json" },
+					body: JSON.stringify({ name: "Sprocket" }),
+				});
+				const data = await response.json();
+				assert.strictEqual(response.status, 201);
+				assert.deepStrictEqual(data, { name: "Sprocket", action: "create" });
+			});
+		});
+	});
+
 	describe("Nested Self-Referential Resources", () => {
 		describe("GET /people/:person_id/children", () => {
 			it("should return a list of children for a person", async () => {

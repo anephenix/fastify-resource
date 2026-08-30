@@ -546,4 +546,108 @@ describe("controller", () => {
 			assert.strictEqual(reply.statusCode, 201);
 		});
 	});
+
+	describe("paramsTransform option", () => {
+		let reply: Reply;
+
+		beforeEach(() => {
+			reply = {
+				statusCode: 200,
+				code: (code: number) => {
+					reply.statusCode = code;
+				},
+			};
+		});
+
+		it("should send the params returned by the transform to the service, rather than the raw assembled params", async () => {
+			const request = {
+				params: {},
+				body: { password: "secret" },
+			} as FastifyRequest;
+			const create = async (params: Params) => {
+				assert.deepStrictEqual(params, { password: "hashed:secret" });
+				return { success: true, data: {} };
+			};
+			const service = generateService({ create });
+			const paramsTransform = async (params: Params) => ({
+				...params,
+				password: `hashed:${params.password}`,
+			});
+			const c = controller(service, undefined, undefined, paramsTransform);
+			await c.create(request, reply);
+			assert.strictEqual(reply.statusCode, 201);
+		});
+
+		it("should pass the action name to the transform so it can branch on it", async () => {
+			const request = { params: {} } as FastifyRequest;
+			const getAll = async (params: Params) => {
+				assert.deepStrictEqual(params, { action: "index" });
+				return { success: true, data: [] };
+			};
+			const service = generateService({ getAll });
+			const paramsTransform = async (params: Params, action: string) => ({
+				...params,
+				action,
+			});
+			const c = controller(service, undefined, undefined, paramsTransform);
+			await c.index(request, reply);
+			assert.strictEqual(reply.statusCode, 200);
+		});
+
+		it("should run after headerParams have been merged, so the transform can see header-derived params", async () => {
+			const request = {
+				params: {},
+				headers: { "x-tenant-id": "acme" },
+			} as unknown as FastifyRequest;
+			const getAll = async (params: Params) => {
+				assert.deepStrictEqual(params, { tenantId: "ACME" });
+				return { success: true, data: [] };
+			};
+			const service = generateService({ getAll });
+			const paramsTransform = async (params: Params) => ({
+				...params,
+				tenantId: (params.tenantId as string).toUpperCase(),
+			});
+			const c = controller(
+				service,
+				{ "x-tenant-id": "tenantId" },
+				undefined,
+				paramsTransform,
+			);
+			await c.index(request, reply);
+			assert.strictEqual(reply.statusCode, 200);
+		});
+
+		it("should apply the transform to a custom action, passing the custom action's name", async () => {
+			const request = {
+				params: {},
+				body: { ids: [1, 2] },
+			} as FastifyRequest;
+			const service = generateService({});
+			const archive = async (params: Params) => {
+				assert.deepStrictEqual(params, { ids: [1, 2], action: "archive" });
+				return { success: true, data: {} };
+			};
+			(service as Service).archive = archive;
+			const paramsTransform = async (params: Params, action: string) => ({
+				...params,
+				action,
+			});
+			const c = controller(
+				service,
+				undefined,
+				[
+					{
+						name: "archive",
+						method: "post",
+						path: "archive",
+						scope: "collection",
+					},
+				],
+				paramsTransform,
+			);
+			await c.archive(request, reply);
+			assert.strictEqual(reply.statusCode, 200);
+		});
+	});
 });

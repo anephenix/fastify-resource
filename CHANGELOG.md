@@ -1,5 +1,18 @@
 # CHANGELOG
 ### 0.0.2 - Thursday 16th January, 2025
+### 0.0.14 - Monday 31st August, 2026
+
+- Merge pull request #300 from anephenix/feature/cli-generator
+- Add a generate CLI for scaffolding model/service/controller/routes files
+- Merge pull request #298 from anephenix/dependabot/npm_and_yarn/biomejs/biome-2.5.11
+- Merge pull request #299 from anephenix/dependabot/npm_and_yarn/types/node-26.4.0
+- Bump @types/node from 26.2.0 to 26.4.0
+- Bump @biomejs/biome from 2.5.9 to 2.5.11
+- Merge pull request #297 from anephenix/feature/params-transform
+- Add support for transforming params/body passed from controller to service
+- Merge pull request #296 from anephenix/feature/custom-actions
+- Add support for custom API routes and controller/service actions
+
 ### 0.0.13 - Sunday 30th August, 2026
 
 - Merge pull request #295 from anephenix/schema-validation-support

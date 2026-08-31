@@ -10,6 +10,9 @@
     }
   },
   "types": "./dist/index.d.ts",
+  "bin": {
+    "fastify-resource": "./dist/cli.js"
+  },
   "files": [
     "dist",
     "README.md"
@@ -71,8 +74,15 @@
   },
   "size-limit": [
     {
-      "path": "dist/*.js",
+      "name": "index",
+      "path": "dist/index.js",
       "limit": "11 KB"
+    },
+    {
+      "name": "cli",
+      "path": "dist/cli.js",
+      "limit": "15 KB",
+      "ignore": ["node:fs", "node:path"]
     }
   ]
 }

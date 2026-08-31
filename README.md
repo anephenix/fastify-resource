@@ -595,6 +595,43 @@ they do to the generated CRUD ones. `schema` also works the same way -
 just key the schema entry by the custom action's `name` instead of one of
 `index`/`create`/`get`/`update`/`delete`.
 
+### Generating scaffold files with the CLI
+
+If you want to fully own a resource's code instead of using the generated
+plugin, the package ships a `generate` CLI that scaffolds plain
+fastify + Objection.js files for it - a model, a service, a controller and a
+routes file, wired together with the same try/catch + status-code pattern
+shown at the top of this README. **These generated files have no dependency
+on fastify-resource** - they're a starting point for the "custom strategy",
+not an alternative way of registering the plugin.
+
+```shell
+npx @anephenix/fastify-resource generate application
+```
+
+This creates:
+
+```
+src/models/Application.ts
+src/services/application.ts
+src/controllers/application.ts
+src/routes/application.ts
+src/index.ts
+```
+
+The resource name is singularized and can be given in any casing
+(`application`, `Applications`, `blog_post`, `blogPost` all work) - it's
+used as-is for the model's class name, and pluralized for the route URLs
+and the model's `tableName`.
+
+Options:
+
+- `--output <dir>` - directory to generate the files under (default: `src`)
+- `--force` - overwrite an existing model/service/controller/routes file for
+  that resource. `index.ts` is never overwritten (it may already register
+  other resources) - if one already exists, the CLI prints the two lines
+  needed to wire up the new resource's routes instead.
+
 ### Tests
 
 ```shell

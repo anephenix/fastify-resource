@@ -18,10 +18,18 @@ const currentVersion = packageJson.version;
 const [major, minor, patch] = currentVersion.split(".").map(Number);
 const nextVersion = `${major}.${minor}.${patch + 1}`;
 
-// Get previous version from git tags
-const previousVersion = execSync("git describe --tags --abbrev=0 HEAD^")
-	.toString()
-	.trim();
+// Get previous version from git tags - falls back to the repo's root
+// commit if no tag exists yet (i.e. this is the first release).
+let previousVersion: string;
+try {
+	previousVersion = execSync("git describe --tags --abbrev=0 HEAD^")
+		.toString()
+		.trim();
+} catch {
+	previousVersion = execSync("git rev-list --max-parents=0 HEAD")
+		.toString()
+		.trim();
+}
 
 // Get commit messages between previous version and current version
 const commitMessages = execSync(

@@ -138,6 +138,17 @@ for the Cucumber suite to retrieve codes/tokens over HTTP without scraping
 stdout, which is a different problem than "what does sending an email look
 like."
 
+**Why the magic-link "email" body is a link, not just a token+code pair:**
+`POST /magic-links` deliberately never returns the token in its response -
+if it did, anyone could "sign in" as any email address just by knowing it,
+with no need to prove they control that inbox. The token has to travel
+through the side channel (the email) to prove that. So the frontend
+(`Login.svelte`) can't know the token until the user has followed the
+link - it checks for a `?token=` query param on load, and if present shows
+*only* a code field; the "request a link" form only ever shows a "check
+your email" message. In this demo, "clicking the link" means copying the
+URL the worker logs and pasting it into the browser.
+
 ## Reproducing this from scratch
 
 If you wanted to build this yourself against a fresh checkout of both

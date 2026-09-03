@@ -115,7 +115,7 @@ export function registerAuthRoutes(app: FastifyInstance) {
 					data: {
 						to: email,
 						subject: "Your magic sign-in link",
-						body: `Enter this token and code on the login page to sign in:\n\nToken: ${token}\nCode: ${code}`,
+						body: `Click this link to sign in, then enter the code below:\n\nhttp://localhost:5173/login?token=${token}\n\nCode: ${code}`,
 					},
 				});
 				outbox.record({ to: email, kind: "magic-link", token, code });

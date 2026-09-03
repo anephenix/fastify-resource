@@ -3,12 +3,16 @@
 	import { router } from "../lib/router.svelte";
 	import { session } from "../lib/session.svelte";
 
+	// The magic-link "email" is a link containing this - landing here with a
+	// token in the URL is what clicking that link looks like, so only the
+	// code (the human-facing confirmation piece) needs to be typed in.
+	const tokenFromUrl = router.query().get("token");
+
 	let mode = $state<"password" | "magic-link">("password");
 	let identifier = $state("");
 	let password = $state("");
 	let email = $state("");
 	let magicLinkRequested = $state(false);
-	let mlToken = $state("");
 	let mlCode = $state("");
 	let error = $state("");
 	let submitting = $state(false);
@@ -56,7 +60,7 @@
 		submitting = true;
 		try {
 			const result = await api.post("/magic-links/verify", {
-				token: mlToken,
+				token: tokenFromUrl,
 				code: mlCode,
 			});
 			await handleLoginResult(result as { token?: string });
@@ -70,71 +74,71 @@
 
 <h1>Log in</h1>
 
-<div class="tabs">
-	<button
-		class:secondary={mode !== "password"}
-		data-testid="login-tab-password"
-		onclick={() => (mode = "password")}
-	>
-		Password
-	</button>
-	<button
-		class:secondary={mode !== "magic-link"}
-		data-testid="login-tab-magic-link"
-		onclick={() => (mode = "magic-link")}
-	>
-		Magic link
-	</button>
-</div>
-
 {#if error}<p class="error">{error}</p>{/if}
 
-{#if mode === "password"}
-	<form onsubmit={handlePasswordLogin} data-testid="password-login-form">
-		<label>
-			Username or email
-			<input data-testid="login-identifier" bind:value={identifier} required />
-		</label>
-		<label>
-			Password
-			<input
-				data-testid="login-password"
-				type="password"
-				bind:value={password}
-				required
-			/>
-		</label>
-		<button type="submit" disabled={submitting}>Log in</button>
-	</form>
-	<p class="muted"><a href="/forgot-password">Forgot your password?</a></p>
-{:else if !magicLinkRequested}
-	<form onsubmit={handleRequestMagicLink} data-testid="magic-link-request-form">
-		<label>
-			Email
-			<input
-				data-testid="magic-link-email"
-				type="email"
-				bind:value={email}
-				required
-			/>
-		</label>
-		<button type="submit" disabled={submitting}>Send magic link</button>
-	</form>
-{:else}
-	<p class="muted">
-		This demo has no real email delivery - check the API server's console
-		output (or, in the e2e suite, the test-only outbox) for your magic-link
-		token and code.
-	</p>
+{#if tokenFromUrl}
+	<p class="muted">Enter the code from your email to finish signing in.</p>
 	<form onsubmit={handleVerifyMagicLink} data-testid="magic-link-verify-form">
-		<label>
-			Token
-			<input data-testid="magic-link-token" bind:value={mlToken} required />
-		</label>
 		<label>
 			Code
 			<input data-testid="magic-link-code" bind:value={mlCode} required />
 		</label>
 		<button type="submit" disabled={submitting}>Verify</button>
 	</form>
+{:else}
+	<div class="tabs">
+		<button
+			class:secondary={mode !== "password"}
+			data-testid="login-tab-password"
+			onclick={() => (mode = "password")}
+		>
+			Password
+		</button>
+		<button
+			class:secondary={mode !== "magic-link"}
+			data-testid="login-tab-magic-link"
+			onclick={() => (mode = "magic-link")}
+		>
+			Magic link
+		</button>
+	</div>
+
+	{#if mode === "password"}
+		<form onsubmit={handlePasswordLogin} data-testid="password-login-form">
+			<label>
+				Username or email
+				<input data-testid="login-identifier" bind:value={identifier} required />
+			</label>
+			<label>
+				Password
+				<input
+					data-testid="login-password"
+					type="password"
+					bind:value={password}
+					required
+				/>
+			</label>
+			<button type="submit" disabled={submitting}>Log in</button>
+		</form>
+		<p class="muted"><a href="/forgot-password">Forgot your password?</a></p>
+	{:else if !magicLinkRequested}
+		<form onsubmit={handleRequestMagicLink} data-testid="magic-link-request-form">
+			<label>
+				Email
+				<input
+					data-testid="magic-link-email"
+					type="email"
+					bind:value={email}
+					required
+				/>
+			</label>
+			<button type="submit" disabled={submitting}>Send magic link</button>
+		</form>
+	{:else}
+		<p class="muted" data-testid="magic-link-sent-message">
+			Check your email for a sign-in link (this demo has no real email
+			delivery - check the API server's console output, or the e2e suite's
+			test-only outbox).
+		</p>
+	{/if}
 {/if}

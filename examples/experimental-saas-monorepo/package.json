@@ -1,0 +1,17 @@
+{
+  "name": "experimental-saas-monorepo",
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "dev:api": "npm run dev --workspace packages/api",
+    "dev:web": "npm run dev --workspace packages/web",
+    "build": "npm run build --workspace packages/api && npm run build --workspace packages/web",
+    "test:e2e": "npm run test --workspace packages/e2e"
+  },
+  "allowScripts": {
+    "better-sqlite3@11.10.0": true,
+    "argon2": true
+  }
+}

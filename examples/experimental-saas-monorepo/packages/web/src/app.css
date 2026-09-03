@@ -1,0 +1,155 @@
+:root {
+	--text: #3f3f46;
+	--text-h: #09090b;
+	--bg: #fff;
+	--border: #e4e4e7;
+	--accent: #6d28d9;
+	--accent-bg: #f5f3ff;
+	--danger: #b91c1c;
+	--danger-bg: #fef2f2;
+	--sans: system-ui, "Segoe UI", Roboto, sans-serif;
+	font: 16px/1.5 var(--sans);
+	color-scheme: light dark;
+	color: var(--text);
+	background: var(--bg);
+}
+
+@media (prefers-color-scheme: dark) {
+	:root {
+		--text: #d4d4d8;
+		--text-h: #fafafa;
+		--bg: #18181b;
+		--border: #3f3f46;
+		--accent: #a78bfa;
+		--accent-bg: #2e1065;
+		--danger: #fca5a5;
+		--danger-bg: #450a0a;
+	}
+}
+
+* {
+	box-sizing: border-box;
+}
+
+body {
+	margin: 0;
+}
+
+h1,
+h2,
+h3 {
+	color: var(--text-h);
+	font-weight: 600;
+}
+
+a {
+	color: var(--accent);
+}
+
+#app {
+	max-width: 960px;
+	margin: 0 auto;
+	min-height: 100svh;
+	display: flex;
+	flex-direction: column;
+}
+
+main {
+	flex: 1;
+	padding: 24px 20px 48px;
+}
+
+nav {
+	display: flex;
+	align-items: center;
+	gap: 16px;
+	padding: 16px 20px;
+	border-bottom: 1px solid var(--border);
+}
+
+nav .brand {
+	font-weight: 700;
+	color: var(--text-h);
+	text-decoration: none;
+	margin-right: auto;
+}
+
+nav a,
+nav button.link {
+	color: var(--text);
+	text-decoration: none;
+	background: none;
+	border: none;
+	font: inherit;
+	cursor: pointer;
+	padding: 0;
+}
+
+nav a:hover,
+nav button.link:hover {
+	color: var(--accent);
+}
+
+form {
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+	max-width: 360px;
+}
+
+label {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+	font-size: 14px;
+	color: var(--text-h);
+}
+
+input {
+	font: inherit;
+	padding: 8px 10px;
+	border: 1px solid var(--border);
+	border-radius: 6px;
+	background: var(--bg);
+	color: var(--text);
+}
+
+button {
+	font: inherit;
+	padding: 8px 14px;
+	border-radius: 6px;
+	border: 1px solid var(--accent);
+	background: var(--accent);
+	color: #fff;
+	cursor: pointer;
+}
+
+button:hover {
+	opacity: 0.9;
+}
+
+button.secondary {
+	background: var(--bg);
+	color: var(--accent);
+}
+
+.error {
+	color: var(--danger);
+	background: var(--danger-bg);
+	border-radius: 6px;
+	padding: 8px 10px;
+	font-size: 14px;
+}
+
+.card {
+	border: 1px solid var(--border);
+	border-radius: 8px;
+	padding: 16px;
+	margin-bottom: 12px;
+}
+
+.muted {
+	color: var(--text);
+	opacity: 0.7;
+	font-size: 14px;
+}

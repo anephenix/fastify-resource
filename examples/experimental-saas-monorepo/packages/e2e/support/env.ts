@@ -8,6 +8,7 @@ export const WEB_PORT = 5174;
 export const BASE_URL = `http://localhost:${WEB_PORT}`;
 
 export const DB_FILE = path.join(API_DIR, "data", "e2e-test.sqlite3");
+export const QUEUE_DB_FILE = path.join(API_DIR, "data", "e2e-test-queue.sqlite3");
 
 // Same 64-char hex format required by buildTotpCrypto - fixed rather than
 // randomly generated so a failed run's leftover DB_FILE (if ever inspected

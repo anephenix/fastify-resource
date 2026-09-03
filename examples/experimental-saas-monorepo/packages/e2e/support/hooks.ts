@@ -8,6 +8,7 @@ import {
 	API_PORT,
 	BASE_URL,
 	DB_FILE,
+	QUEUE_DB_FILE,
 	TOTP_SECRET_ENCRYPTION_KEY,
 	WEB_DIR,
 	WEB_PORT,
@@ -40,6 +41,7 @@ async function waitForServer(url: string, logFile: string, timeoutMs = 20_000) {
 BeforeAll({ timeout: 60_000 }, async () => {
 	fs.mkdirSync(path.dirname(DB_FILE), { recursive: true });
 	if (fs.existsSync(DB_FILE)) fs.unlinkSync(DB_FILE);
+	if (fs.existsSync(QUEUE_DB_FILE)) fs.unlinkSync(QUEUE_DB_FILE);
 	execFileSync("npx", ["knex", "migrate:latest"], {
 		cwd: API_DIR,
 		env: { ...process.env, DB_FILE },
@@ -52,6 +54,7 @@ BeforeAll({ timeout: 60_000 }, async () => {
 		env: {
 			...process.env,
 			DB_FILE,
+			QUEUE_DB_FILE,
 			PORT: String(API_PORT),
 			NODE_ENV: "test",
 			TOTP_SECRET_ENCRYPTION_KEY,

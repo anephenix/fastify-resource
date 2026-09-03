@@ -56,5 +56,6 @@ export const api = {
 		}),
 	patch: (path: string, data?: unknown) =>
 		request(path, { method: "PATCH", body: JSON.stringify(data) }),
-	delete: (path: string) => request(path, { method: "DELETE" }),
+	// Same empty-body-with-a-JSON-content-type issue as post() above.
+	delete: (path: string) => request(path, { method: "DELETE", body: "{}" }),
 };

@@ -26,6 +26,7 @@ import RecoveryCode from "../models/RecoveryCode.js";
 import ForgotPassword from "../models/ForgotPassword.js";
 import { auth, totpCrypto } from "../lib/auth.js";
 import * as outbox from "../lib/outbox.js";
+import { emailQueue } from "../lib/emailQueue.js";
 
 // This file needs otplib and qrcode installed:
 //   npm i otplib qrcode
@@ -109,8 +110,14 @@ export function registerAuthRoutes(app: FastifyInstance) {
 					expires_at: tokenExpiresAt.toISOString(),
 				});
 
-				// TODO: email `code` and a link containing `token` to the user.
-				console.log(`Magic link code for ${email}: ${code} (token: ${token})`);
+				await emailQueue.add({
+					name: "magic-link",
+					data: {
+						to: email,
+						subject: "Your magic sign-in link",
+						body: `Enter this token and code on the login page to sign in:\n\nToken: ${token}\nCode: ${code}`,
+					},
+				});
 				outbox.record({ to: email, kind: "magic-link", token, code });
 
 				reply.code(201).send({ message: "Magic link created" });
@@ -412,10 +419,14 @@ export function registerAuthRoutes(app: FastifyInstance) {
 						expires_at: new Date(Date.now() + 3_600_000),
 					});
 
-					// TODO: email a link to /reset-password/:selector?token=<token>
-					console.log(
-						`Password reset link for ${identifier}: /reset-password/${selector}?token=${token}`,
-					);
+					await emailQueue.add({
+						name: "reset-password",
+						data: {
+							to: user.email,
+							subject: "Reset your password",
+							body: `Reset your password here: http://localhost:5173/reset-password/${selector}?token=${token}`,
+						},
+					});
 					outbox.record({
 						to: user.email,
 						kind: "reset-password",

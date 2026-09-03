@@ -14,6 +14,9 @@ driving a real browser against real running servers.
 - **API**: a `Project` resource (create/list/delete, scoped per user) built
   with `@anephenix/fastify-resource`'s plugin - the actual library this
   repo publishes.
+- **Email**: magic-link codes and password-reset links go through a real
+  job queue (`@anephenix/job-queue`, SQLite-backed) rather than a bare
+  `console.log` in the route handler - see "Email delivery" below.
 - **Frontend**: Vite + Svelte 5 - home, signup, login (password and magic-
   link), MFA-login, forgot-password, reset-password, dashboard, and profile
   (with MFA enrollment) pages.
@@ -66,8 +69,9 @@ consumer would:
    This produced `packages/api/src/lib/auth.ts`, `src/models/{User,Session,
    MagicLink,MfaToken,RecoveryCode,ForgotPassword}.ts`, `src/routes/auth.ts`
    and `src/index.ts` - real generated code, then hand-edited in a few
-   places (wiring in the database, a dev-only "outbox" instead of
-   `console.log` for magic-link codes and reset tokens, service naming).
+   places (wiring in the database, a real email queue and a dev-only
+   "outbox" in place of the generated `console.log` for magic-link codes
+   and reset tokens - see "Email delivery" below - and service naming).
 
 3. **Wrote Knex migrations** for every table those generated models expect,
    plus one for `projects`.
@@ -92,17 +96,52 @@ consumer would:
    Playwright script before the real test suite existed - this is what
    caught the `RecoveryCode` bug above, plus a bug in this app's own
    `api.ts` (sending `Content-Type: application/json` with an empty body on
-   bodyless POSTs, which Fastify's parser rejects).
+   bodyless POSTs, which Fastify's parser rejects - it turned out `post()`
+   wasn't the only place this bit: `delete()` had the same bug, caught
+   later when project deletion silently failed from the dashboard).
 
 7. **Built the Cucumber suite** last, once the manual flows were proven to
    work - `support/hooks.ts` spins up a real API + web server against a
    throwaway SQLite file and a real headless browser before any scenario
    runs, and tears both down after.
 
+8. **Replaced the wizard's `console.log` stand-ins with a real job queue**
+   (`@anephenix/job-queue`) once the rest of the app was working end to end
+   - see "Email delivery" below.
+
+## Email delivery
+
+The fastify-auth wizard's generated code has magic-link codes and password-
+reset links go out via a plain `console.log` in the route handler - a
+reasonable placeholder, but not what a real app would do. This example
+replaces that with a real (if minimal) email pipeline using
+[`@anephenix/job-queue`](https://github.com/anephenix/job-queue)'s
+`SQLiteQueue`:
+
+- `packages/api/src/lib/emailQueue.ts` - a `SQLiteQueue` backed by its own
+  SQLite file (`QUEUE_DB_FILE`, separate from the app's own `DB_FILE` - a
+  self-managed queue table shouldn't share a file with Knex-managed schema).
+- `packages/api/src/lib/emailWorker.ts` - a `Worker` subclass whose
+  `processJob` is the actual "send" step - here, it `console.log`s what a
+  real email provider call would have sent, so the terminal output looks
+  like a transactional email rather than a one-line debug log.
+- `packages/api/src/index.ts` starts the worker (`emailWorker.start()`)
+  alongside the Fastify server - it polls the same SQLite file the API
+  writes jobs to, no separate process needed for a single-machine app like
+  this one.
+- `routes/auth.ts`'s two `// TODO: email ...` spots now call
+  `emailQueue.add({ name, data: { to, subject, body } })` instead of
+  logging directly.
+
+The dev-only `outbox` (see below) is unrelated and still there - it exists
+for the Cucumber suite to retrieve codes/tokens over HTTP without scraping
+stdout, which is a different problem than "what does sending an email look
+like."
+
 ## Reproducing this from scratch
 
 If you wanted to build this yourself against a fresh checkout of both
-repos, the recipe is exactly the 7 steps above. The specific commands:
+repos, the recipe is exactly the 8 steps above. The specific commands:
 
 ```shell
 # 1. Monorepo root
@@ -113,7 +152,7 @@ mkdir my-app && cd my-app
 mkdir -p packages/api/src && cd packages/api
 npm init -y
 npm i fastify @fastify/cookie objection knex better-sqlite3 otplib qrcode \
-  @anephenix/auth @anephenix/fastify-resource
+  @anephenix/auth @anephenix/fastify-resource @anephenix/job-queue
 npm i -D typescript tsx @types/node @types/better-sqlite3 @types/qrcode
 npm i file:../../../fastify-auth   # or the published version, once it is
 npx @anephenix/fastify-auth wizard --output src
@@ -122,7 +161,9 @@ npx @anephenix/fastify-auth wizard --output src
 npx knex migrate:make create_users_table   # ...repeat per table
 
 # 4. Wire fastify-resource into src/index.ts (see that file for the
-#    preHandler/headerParams/paramsTransform/customModelAction pattern)
+#    preHandler/headerParams/paramsTransform/customModelAction pattern),
+#    and point the wizard's two "TODO: email ..." spots at a real
+#    emailQueue.add(...) instead (see "Email delivery" above)
 
 # 5. Frontend
 cd .. && npm create vite@latest web -- --template svelte-ts
@@ -172,6 +213,9 @@ npm run migrate --workspace packages/api
 npm run dev:api   # http://localhost:3000
 npm run dev:web   # http://localhost:5173
 ```
+
+Magic-link codes and password-reset links "arrive" as a formatted block in
+the `dev:api` terminal - see "Email delivery" above.
 
 ## Running the e2e tests
 

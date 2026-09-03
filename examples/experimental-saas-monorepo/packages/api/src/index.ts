@@ -8,11 +8,16 @@ import Session from "./models/Session.js";
 import Project from "./models/Project.js";
 import { scopedProjectAction } from "./lib/scopedProjectAction.js";
 import * as outbox from "./lib/outbox.js";
+import { emailWorker } from "./lib/emailWorker.js";
 
 const app = Fastify();
 
 app.register(fastifyCookie);
 registerAuthRoutes(app);
+
+// Polls the email queue and "delivers" (console.logs) whatever routes/
+// auth.ts enqueues - see lib/emailQueue.ts and lib/emailWorker.ts.
+emailWorker.start();
 
 // ── Project resource (fastify-resource dogfood) ───────────────────────────
 

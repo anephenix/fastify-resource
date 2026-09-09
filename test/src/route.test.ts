@@ -3,6 +3,7 @@ import { describe, it } from "vitest";
 import {
 	generateRoute,
 	generateRoutePart,
+	getAncestorParamKeys,
 	resourceRoutes,
 } from "../../src/route";
 
@@ -218,6 +219,37 @@ describe("route", () => {
 				const resourceList = "person";
 				const routes = resourceRoutes(resourceList, controller);
 				assert.strictEqual(routes.length, 5);
+			});
+		});
+	});
+
+	describe("#getAncestorParamKeys", () => {
+		describe("when passed a single resource (string)", () => {
+			it("should return an empty array", () => {
+				assert.deepStrictEqual(getAncestorParamKeys("person"), []);
+			});
+		});
+
+		describe("when passed a single resource in an array", () => {
+			it("should return an empty array", () => {
+				assert.deepStrictEqual(getAncestorParamKeys(["person"]), []);
+			});
+		});
+
+		describe("when passed a nested resource list", () => {
+			it("should return the ancestor :xxx_id param names, excluding the leaf resource", () => {
+				assert.deepStrictEqual(getAncestorParamKeys(["person", "possession"]), [
+					"person_id",
+				]);
+			});
+		});
+
+		describe("when passed a deeply nested resource list", () => {
+			it("should return one ancestor param name per ancestor resource, in order", () => {
+				assert.deepStrictEqual(
+					getAncestorParamKeys(["org", "project", "item"]),
+					["org_id", "project_id"],
+				);
 			});
 		});
 	});

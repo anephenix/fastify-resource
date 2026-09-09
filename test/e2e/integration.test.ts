@@ -217,14 +217,79 @@ describe("Integration tests", () => {
 
 		describe("DELETE /people/:person_id/possessions/:id", () => {
 			it("should delete a possession by ID for a person", async () => {
+				const created = await Person.relatedQuery("possessions")
+					.for(1)
+					.insert({ name: "Disposable watch" });
+				const response = await fetch(
+					`${baseUrl}/people/1/possessions/${created.id}`,
+					{ method: "DELETE" },
+				);
+				assert.strictEqual(response.status, 200);
+				const possession = (await Person.relatedQuery("possessions")
+					.for(1)
+					.findById(created.id)) as Possession;
+				assert.strictEqual(possession, undefined);
+			});
+		});
+
+		describe("referential integrity between parent and nested resource", () => {
+			it("should not update a possession that belongs to a different person", async () => {
+				// Possession 2 ("Bike") belongs to person 2 (Sage), not person 1.
+				const response = await fetch(`${baseUrl}/people/1/possessions/2`, {
+					method: "PATCH",
+					headers: { "Content-Type": "application/json" },
+					body: JSON.stringify({ name: "Stolen bike" }),
+				});
+				assert.strictEqual(response.status, 400);
+				const possession = (await Person.relatedQuery("possessions")
+					.for(2)
+					.findById(2)) as Possession;
+				assert.strictEqual(possession.name, "Bike");
+			});
+
+			it("should not delete a possession that belongs to a different person", async () => {
 				const response = await fetch(`${baseUrl}/people/1/possessions/2`, {
 					method: "DELETE",
+				});
+				assert.strictEqual(response.status, 400);
+				const possession = (await Person.relatedQuery("possessions")
+					.for(2)
+					.findById(2)) as Possession;
+				assert.ok(possession);
+			});
+
+			it("should not let a body-supplied person_id override the URL's ancestor param", async () => {
+				// Attempt to hijack the WHERE scoping by claiming (in the body) to
+				// belong to person 2, while acting on possession 1 (which belongs
+				// to person 1) through person 1's own URL - the URL should win,
+				// so this should succeed as a normal same-parent update.
+				const response = await fetch(`${baseUrl}/people/1/possessions/1`, {
+					method: "PATCH",
+					headers: { "Content-Type": "application/json" },
+					body: JSON.stringify({ person_id: 2, name: "Car (still person 1)" }),
 				});
 				assert.strictEqual(response.status, 200);
 				const possession = (await Person.relatedQuery("possessions")
 					.for(1)
-					.findById(2)) as Possession;
-				assert.strictEqual(possession, undefined);
+					.findById(1)) as Possession;
+				assert.strictEqual(possession.name, "Car (still person 1)");
+			});
+
+			it("should not let a body-supplied id redirect an update to a different record", async () => {
+				// Attempt to hijack PATCH /people/1/possessions/1 into patching
+				// possession 3 (Sophia's Skateboard) by passing id: 3 in the body.
+				const response = await fetch(`${baseUrl}/people/1/possessions/1`, {
+					method: "PATCH",
+					headers: { "Content-Type": "application/json" },
+					body: JSON.stringify({ id: 3, name: "Hijacked" }),
+				});
+				assert.strictEqual(response.status, 200);
+				const data = await response.json();
+				assert.strictEqual(data.id, 1);
+				const untouched = (await Person.relatedQuery("possessions")
+					.for(3)
+					.findById(3)) as Possession;
+				assert.strictEqual(untouched.name, "Skateboard");
 			});
 		});
 	});

@@ -13,9 +13,9 @@ import type {
 	ServiceOptions,
 	ServiceResponse,
 } from "./global.js";
-import { objectWithoutKey } from "./utils.js";
+import { objectWithoutKey, pickKeys } from "./utils.js";
 
-/* 
+/*
   NOTE:
 
   I think that this needs to understand if the resource is an objection.js model or a relation
@@ -28,11 +28,23 @@ import { objectWithoutKey } from "./utils.js";
   At the moment, parent models are passed in as a parameter - e.g. parent_id.
 
 */
+/*
+  `ancestorParamKeys` is the list of ":xxx_id" ancestor params a nested
+  resource's URL carries (see route.ts's getAncestorParamKeys), e.g.
+  ["project_id"] for /projects/:project_id/items/:id. update/delete are
+  scoped to those keys so that a request can't mutate/delete a record that
+  doesn't actually belong to the parent(s) named in the URL - otherwise
+  patchAndFetchById/deleteById would only ever check the record's own id,
+  letting e.g. PATCH /projects/1/items/:id succeed for an item that
+  actually belongs to project 2.
+*/
 const modelAction = async (
 	action: string,
 	model: ModelClass<Model>,
 	params: Params,
+	ancestorParamKeys: Array<string> = [],
 ) => {
+	const scopeParams = pickKeys(params, ancestorParamKeys);
 	switch (action) {
 		case "getAll":
 			return await model.query().where(params);
@@ -40,16 +52,26 @@ const modelAction = async (
 			return await model.query().where(params).first();
 		case "create":
 			return await model.query().insert(params);
-		case "update":
-			return await model
+		case "update": {
+			const updated = await model
 				.query()
+				.where(scopeParams)
 				.patchAndFetchById(
 					params.id as MaybeCompositeId,
 					objectWithoutKey(params, "id"),
 				);
+			// patchAndFetchById resolves to undefined (rather than rejecting)
+			// when the where-scoped update matches zero rows - e.g. the id
+			// exists but doesn't belong to the ancestor(s) named in the URL.
+			if (!updated) {
+				throw new Error(`Record with id ${params.id} not found`);
+			}
+			return updated;
+		}
 		case "delete": {
 			const deletedCount = await model
 				.query()
+				.where(scopeParams)
 				.deleteById(params.id as MaybeCompositeId);
 			if (deletedCount === 0) {
 				throw new Error(`Record with id ${params.id} not found`);
@@ -120,6 +142,7 @@ const serviceFunction = (
 	action: string,
 	model: ModelClass<Model>,
 	serviceOptions?: ServiceOptions,
+	ancestorParamKeys?: Array<string>,
 ) => {
 	return async (params: Params): Promise<ServiceResponse> => {
 		try {
@@ -138,7 +161,7 @@ const serviceFunction = (
 				);
 				data = await relatedQueryModelAction(action, model, params);
 			} else {
-				data = await modelAction(action, model, params);
+				data = await modelAction(action, model, params, ancestorParamKeys);
 			}
 			return { success: true, data };
 		} catch (error) {
@@ -152,17 +175,23 @@ function serviceGenerator(
 	model: ModelClass<Model>,
 	serviceOptions?: ServiceOptions,
 	customActions?: Array<CustomActionDefinition>,
+	ancestorParamKeys?: Array<string>,
 ): Service {
 	const service: Service = {
-		getAll: serviceFunction("getAll", model, serviceOptions),
-		create: serviceFunction("create", model, serviceOptions),
-		get: serviceFunction("get", model, serviceOptions),
-		update: serviceFunction("update", model, serviceOptions),
-		delete: serviceFunction("delete", model, serviceOptions),
+		getAll: serviceFunction("getAll", model, serviceOptions, ancestorParamKeys),
+		create: serviceFunction("create", model, serviceOptions, ancestorParamKeys),
+		get: serviceFunction("get", model, serviceOptions, ancestorParamKeys),
+		update: serviceFunction("update", model, serviceOptions, ancestorParamKeys),
+		delete: serviceFunction("delete", model, serviceOptions, ancestorParamKeys),
 	};
 	if (customActions) {
 		for (const { name } of customActions) {
-			service[name] = serviceFunction(name, model, serviceOptions);
+			service[name] = serviceFunction(
+				name,
+				model,
+				serviceOptions,
+				ancestorParamKeys,
+			);
 		}
 	}
 	return service;

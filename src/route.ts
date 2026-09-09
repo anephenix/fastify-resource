@@ -28,6 +28,27 @@ function generateRoutePart(resource: string, type: RouteType, last = false) {
 }
 
 /*
+	Returns the list of ":xxx_id" ancestor param names that a nested
+	resource's member route carries - one per ancestor resource, in the same
+	order they appear in the URL. A single (non-nested) resource has no
+	ancestors, so this returns an empty array for it.
+
+	Used to scope update/delete queries to the record's actual parent(s), so
+	that e.g. PATCH /projects/1/items/:id can't be used to mutate an item
+	that belongs to a different project.
+*/
+function getAncestorParamKeys(
+	resourceOrResourceList: ResourceOrResourcesList,
+): Array<string> {
+	const resourceList = Array.isArray(resourceOrResourceList)
+		? resourceOrResourceList
+		: [resourceOrResourceList];
+	return resourceList
+		.slice(0, -1)
+		.map((resource) => `${toSnakeCase(resource)}_id`);
+}
+
+/*
 	Loops through the list of resources, and generates a route,
 	depending on the type of route (collection or member)
 */
@@ -99,4 +120,9 @@ function resourceRoutes(
 	return routes;
 }
 
-export { generateRoute, generateRoutePart, resourceRoutes };
+export {
+	generateRoute,
+	generateRoutePart,
+	getAncestorParamKeys,
+	resourceRoutes,
+};

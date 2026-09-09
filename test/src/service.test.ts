@@ -222,6 +222,80 @@ describe("service", () => {
 			});
 		});
 
+		describe("ancestorParamKeys option (referential integrity)", () => {
+			describe("service.update", () => {
+				it("should update a record that belongs to the ancestor named by ancestorParamKeys", async () => {
+					const service = serviceGenerator(Employee, undefined, undefined, [
+						"manager_id",
+					]);
+					const boss = await Employee.query().insert({ name: "Boss" });
+					const report = await Employee.query().insert({
+						name: "Report",
+						manager_id: boss.id,
+					});
+					const { success, data } = await service.update({
+						manager_id: boss.id,
+						id: report.id,
+						name: "Report Renamed",
+					});
+					assert.strictEqual(success, true);
+					assert.strictEqual(
+						(data as Record<string, unknown>).name,
+						"Report Renamed",
+					);
+				});
+
+				it("should not update a record that belongs to a different ancestor", async () => {
+					const service = serviceGenerator(Employee, undefined, undefined, [
+						"manager_id",
+					]);
+					const bossA = await Employee.query().insert({ name: "Boss A" });
+					const bossB = await Employee.query().insert({ name: "Boss B" });
+					const report = await Employee.query().insert({
+						name: "Report A",
+						manager_id: bossA.id,
+					});
+					const { success, error } = await service.update({
+						manager_id: bossB.id,
+						id: report.id,
+						name: "Hijacked",
+					});
+					assert.strictEqual(success, false);
+					assert.deepStrictEqual(
+						error,
+						new Error(`Record with id ${report.id} not found`),
+					);
+					const reloaded = await Employee.query().findById(report.id as number);
+					assert.strictEqual(reloaded?.name, "Report A");
+				});
+			});
+
+			describe("service.delete", () => {
+				it("should not delete a record that belongs to a different ancestor", async () => {
+					const service = serviceGenerator(Employee, undefined, undefined, [
+						"manager_id",
+					]);
+					const bossC = await Employee.query().insert({ name: "Boss C" });
+					const bossD = await Employee.query().insert({ name: "Boss D" });
+					const report = await Employee.query().insert({
+						name: "Report C",
+						manager_id: bossC.id,
+					});
+					const { success, error } = await service.delete({
+						manager_id: bossD.id,
+						id: report.id,
+					});
+					assert.strictEqual(success, false);
+					assert.deepStrictEqual(
+						error,
+						new Error(`Record with id ${report.id} not found`),
+					);
+					const reloaded = await Employee.query().findById(report.id as number);
+					assert.ok(reloaded);
+				});
+			});
+		});
+
 		describe("customActions option", () => {
 			it("should register a service function for each custom action, keyed by its name", () => {
 				const service = serviceGenerator(Employee, undefined, [

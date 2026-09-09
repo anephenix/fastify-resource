@@ -20,8 +20,9 @@
 - [x] Workout strategy for supporting preHandlers in fastify
 - [x] Workout strategy for being able to map/transform params/body passed from controller action to service
 - [x] A CLI to generate the code in folders and files for you (models/controllers/services/routes/index), so that you don't have to write lines of code in those places, if you wish to support the custom strategy.
+- [x] Workout strategy for implementing referential integrity on HTTP requests to nested resources
 
 ## Next
 
-- [ ] Workout strategy for implementing referential integrity on HTTP requests to nested resources
 - [ ] Workout strategy for abstracting Objection.js so that a Mongoose model for MongoDB could be used for example
+- [ ] Workout strategy for multi-level nested resource referential integrity when the leaf model doesn't have a denormalized column for every ancestor (see README "Referential integrity" caveat)

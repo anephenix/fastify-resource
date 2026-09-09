@@ -111,6 +111,13 @@ const getHeaderParams = (
   passed in the HTTP API url, and be able to combine them with the request
   body so that they can be passed alltogether to the service function.
 
+  The request body is merged in first and the URL params second, so a
+  same-named value in the body (e.g. a nested resource's "id" or
+  ":xxx_id" ancestor param) can never override the value that actually came
+  from the URL. Without this, a client could send e.g. `{ id: 3 }` in the
+  body of a PATCH to /people/1/possessions/1 and have it silently act on
+  record 3 instead of 1.
+
   Header-derived params (if configured) are merged in last, so that a value
   taken from a request header (e.g. a tenant id or a user id resolved from a
   bearer token) cannot be overridden by a client-supplied body/url param of
@@ -122,7 +129,7 @@ const getParams = (
 	headerParams?: HeaderParams,
 ) => {
 	const base = includeBody
-		? Object.assign({}, req.params, req.body)
+		? Object.assign({}, req.body, req.params)
 		: Object.assign({}, req.params);
 	return Object.assign(base, getHeaderParams(headerParams, req));
 };

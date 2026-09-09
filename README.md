@@ -358,6 +358,33 @@ DELETE  /posts/:post_id/comments/:id
 You can have many levels of nested resources in your code, it is not limited
 to any number (we just showed 2 resources in order to demonstrate the example).
 
+#### Referential integrity
+
+For a nested resource (with the default service - i.e. no `serviceOptions.type:
+"relatedQuery"` or `customModelAction`), `update` and `delete` are scoped to
+the ancestor id(s) in the URL, not just the resource's own `id`. This means
+`PATCH /posts/1/comments/2` will fail with a 400 (rather than silently
+succeeding) if comment `2` doesn't actually belong to post `1` - so one
+tenant/parent's URL can't be used to mutate or delete another's nested
+record.
+
+This scoping requires the leaf model to have a real column matching each
+ancestor's `:xxx_id` param name (e.g. `post_id` on the `Comment` model,
+exactly as shown in the schema-validation guidance above). For 3+ levels of
+nesting, that means the leaf table needs a column for *every* ancestor in
+the chain, not just its immediate parent - if it only has a `post_id`
+column but the resource is nested 3 levels deep (e.g.
+`/blogs/:blog_id/posts/:post_id/comments/:id`), the `blog_id` scoping will
+fail because there's no `blog_id` column on the comments table to filter
+on. If you need that, either denormalize the ancestor id(s) onto the leaf
+table, or use the `relatedQuery` service option (see below), which scopes
+through the model's `relationMappings` instead of raw columns and already
+enforces the same referential integrity guarantee.
+
+If you supply a `customModelAction`, this scoping is not applied
+automatically - you're responsible for enforcing it yourself in that
+function.
+
 ### Support for self-referential resources
 
 There might be a case where you use the same database table for a type of Model 

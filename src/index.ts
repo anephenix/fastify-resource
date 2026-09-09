@@ -12,7 +12,7 @@ import type {
 	PreHandlerOption,
 	ResourceOrResourcesList,
 } from "./global.js";
-import { resourceRoutes } from "./route.js";
+import { getAncestorParamKeys, resourceRoutes } from "./route.js";
 import serviceGenerator, { modelAction } from "./service.js";
 
 type RouteMapParams = {
@@ -35,7 +35,13 @@ function resource(
 	resourceList: ResourceOrResourcesList,
 	customActions?: Array<CustomActionDefinition>,
 ) {
-	const service = serviceGenerator(model, undefined, customActions);
+	const ancestorParamKeys = getAncestorParamKeys(resourceList);
+	const service = serviceGenerator(
+		model,
+		undefined,
+		customActions,
+		ancestorParamKeys,
+	);
 	const controller = controllerGenerator(service, undefined, customActions);
 	const routes = resourceRoutes(resourceList, controller, customActions);
 	return { routes, controller, service };
@@ -61,7 +67,13 @@ const fastifyResource = fastifyPlugin(
 			customActions,
 			paramsTransform,
 		} = opts;
-		const service = serviceGenerator(model, serviceOptions, customActions);
+		const ancestorParamKeys = getAncestorParamKeys(resourceList);
+		const service = serviceGenerator(
+			model,
+			serviceOptions,
+			customActions,
+			ancestorParamKeys,
+		);
 		const controller = controllerGenerator(
 			service,
 			headerParams,

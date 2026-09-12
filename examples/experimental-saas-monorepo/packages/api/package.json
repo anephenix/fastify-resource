@@ -11,7 +11,7 @@
     "migrate:make": "knex migrate:make"
   },
   "dependencies": {
-    "@anephenix/auth": "^0.0.6",
+    "@anephenix/auth": "^0.0.7",
     "@anephenix/fastify-auth": "file:../../../../../fastify-auth",
     "@anephenix/fastify-resource": "^0.0.14",
     "@anephenix/job-queue": "^1.5.0",

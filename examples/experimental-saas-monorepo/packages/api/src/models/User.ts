@@ -3,12 +3,18 @@ import RecoveryCode from "./RecoveryCode.js";
 import { auth } from "../lib/auth.js";
 
 // TODO: call Model.knex(<your knex connection>) somewhere in your app's
-// setup before this model is used.
+// setup before this model is used. Your users table needs hashed_password,
+// failed_login_attempts (integer, default 0) and
+// failed_login_window_started_at (nullable timestamp) columns - the latter
+// two back the login rate limiting configured in lib/auth.ts.
 class User extends Model {
 	id!: number;
 	username!: string;
 	email!: string;
-	password!: string;
+	password?: string;
+	hashed_password!: string;
+	failed_login_attempts!: number;
+	failed_login_window_started_at?: string | null;
 	mfa_totp_secret!: string | null;
 
 	static get tableName() {
@@ -29,30 +35,25 @@ class User extends Model {
 	}
 
 	async $beforeInsert() {
-		this.password = await auth.hashPassword(this.password);
+		this.hashed_password = await auth.hashPassword(this.password as string);
+		// password has no backing column - without this, Objection tries to
+		// insert it anyway and the query fails against a real database.
+		this.$omitFromDatabaseJson("password");
 	}
 
 	async updatePassword(password: string) {
-		await this.$query().patch({ password: await auth.hashPassword(password) });
+		await this.$query().patch({
+			hashed_password: await auth.hashPassword(password),
+		});
 	}
 
-	static async authenticate({
-		identifier,
-		password,
-	}: {
-		identifier: string;
-		password: string;
-	}) {
-		const user = await User.query()
+	// Used by @anephenix/fastify-auth's shared verifyPassword() to perform a
+	// timing-safe password check and login rate limiting itself.
+	static async findByIdentifier(identifier: string) {
+		return await User.query()
 			.where("username", identifier)
 			.orWhere("email", identifier)
 			.first();
-		if (!user) return null;
-
-		const isValid = await auth.verifyPassword(password, user.password);
-		if (!isValid) return null;
-
-		return Object.assign(user, { isUsingMFA: !!user.mfa_totp_secret });
 	}
 }
 

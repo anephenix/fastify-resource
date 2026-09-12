@@ -12,6 +12,7 @@ import {
 	createRefreshHandler,
 	createSession,
 	issueMfaChallenge,
+	RateLimitedError,
 	respondWithNewSession,
 	validateResetToken,
 	verifyPassword,
@@ -63,7 +64,7 @@ export function registerAuthRoutes(app: FastifyInstance) {
 		};
 
 		try {
-			const user = await verifyPassword(User, identifier, password);
+			const user = await verifyPassword(auth, User, identifier, password);
 			if (!user) {
 				return reply.status(401).send({ error: "Invalid credentials" });
 			}
@@ -82,6 +83,13 @@ export function registerAuthRoutes(app: FastifyInstance) {
 				tokens,
 			});
 		} catch (error) {
+			if (error instanceof RateLimitedError) {
+				reply
+					.header("Retry-After", String(error.retryAfter))
+					.status(429)
+					.send({ error: error.message });
+				return;
+			}
 			reply.status(401).send({ error: (error as Error).message });
 		}
 	});
@@ -332,10 +340,12 @@ export function registerAuthRoutes(app: FastifyInstance) {
 			if (!user) return reply.status(401).send({ error: "Unauthorized" });
 
 			try {
-				const isPasswordValid = await User.authenticate({
-					identifier: user.username,
+				const isPasswordValid = await verifyPassword(
+					auth,
+					User,
+					user.username,
 					password,
-				});
+				);
 				if (!isPasswordValid) throw new Error("Invalid password");
 
 				if (!verifyTotpCode(totpCrypto, user.mfa_totp_secret, code)) {
@@ -349,6 +359,13 @@ export function registerAuthRoutes(app: FastifyInstance) {
 					.status(200)
 					.send({ message: "MFA TOTP disabled successfully" });
 			} catch (error) {
+				if (error instanceof RateLimitedError) {
+					reply
+						.header("Retry-After", String(error.retryAfter))
+						.status(429)
+						.send({ error: error.message });
+					return;
+				}
 				reply.status(400).send({ error: (error as Error).message });
 			}
 		},
@@ -368,10 +385,12 @@ export function registerAuthRoutes(app: FastifyInstance) {
 			if (!user) return reply.status(401).send({ error: "Unauthorized" });
 
 			try {
-				const isPasswordValid = await User.authenticate({
-					identifier: user.username,
+				const isPasswordValid = await verifyPassword(
+					auth,
+					User,
+					user.username,
 					password,
-				});
+				);
 				if (!isPasswordValid) throw new Error("Invalid password");
 
 				const isRecoveryCodeValid = await verifyRecoveryCode(
@@ -388,6 +407,13 @@ export function registerAuthRoutes(app: FastifyInstance) {
 					.status(200)
 					.send({ message: "MFA TOTP disabled successfully" });
 			} catch (error) {
+				if (error instanceof RateLimitedError) {
+					reply
+						.header("Retry-After", String(error.retryAfter))
+						.status(429)
+						.send({ error: error.message });
+					return;
+				}
 				reply.status(400).send({ error: (error as Error).message });
 			}
 		},

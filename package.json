@@ -55,8 +55,8 @@
   },
   "devDependencies": {
     "@biomejs/biome": "2.5.13",
-    "@size-limit/esbuild": "^13.0.1",
-    "@size-limit/esbuild-why": "^13.0.1",
+    "@size-limit/esbuild": "^14.0.0",
+    "@size-limit/esbuild-why": "^14.0.0",
     "@size-limit/preset-small-lib": "^14.0.0",
     "@types/node": "^26.0.0",
     "@types/pluralize": "^0.0.33",
@@ -67,7 +67,7 @@
     "knex": "^3.1.0",
     "objection": "^3.1.5",
     "publint": "^0.3.14",
-    "size-limit": "^13.0.1",
+    "size-limit": "^14.0.0",
     "sqlite3": "^6.0.1",
     "typescript": "^7.0.2",
     "vitest": "^5.0.0"

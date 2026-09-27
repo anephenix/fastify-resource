@@ -1,5 +1,45 @@
 # CHANGELOG
 ### 0.0.2 - Thursday 16th January, 2025
+### 0.0.15 - Sunday 27th September, 2026
+
+- Updated dependencies
+- Updated dependencies
+- Merge pull request #314 from anephenix/dependabot/npm_and_yarn/size-limit/preset-small-lib-14.0.0
+- Merge pull request #313 from anephenix/dependabot/npm_and_yarn/types/node-26.6.1
+- Merge pull request #316 from anephenix/dependabot/npm_and_yarn/vitest-5.0.1
+- Merge pull request #315 from anephenix/dependabot/npm_and_yarn/fastify-5.12.5
+- Bump vitest from 5.0.0 to 5.0.1
+- Bump fastify from 5.12.4 to 5.12.5
+- Bump @size-limit/preset-small-lib from 13.0.3 to 14.0.0
+- Bump @types/node from 26.5.1 to 26.6.1
+- Merge pull request #311 from anephenix/dependabot/npm_and_yarn/biomejs/biome-2.5.13
+- Merge pull request #310 from anephenix/dependabot/npm_and_yarn/types/node-26.5.1
+- Merge pull request #309 from anephenix/dependabot/npm_and_yarn/fastify-5.12.4
+- Bump @biomejs/biome from 2.5.12 to 2.5.13
+- Bump @types/node from 26.5.0 to 26.5.1
+- Bump fastify from 5.12.3 to 5.12.4
+- Migrate experimental-saas-monorepo to fastify-auth's new password/rate-limit contract
+- Enforce referential integrity on nested resource update/delete
+- Merge pull request #306 from anephenix/dependabot/npm_and_yarn/vitest/coverage-v8-5.0.0
+- Updated dependencies
+- Merge branch 'main' into dependabot/npm_and_yarn/vitest/coverage-v8-5.0.0
+- Merge pull request #308 from anephenix/dependabot/npm_and_yarn/biomejs/biome-2.5.12
+- Merge pull request #304 from anephenix/dependabot/npm_and_yarn/globals-17.12.0
+- Merge pull request #305 from anephenix/dependabot/npm_and_yarn/types/node-26.4.1
+- Bump @biomejs/biome from 2.5.11 to 2.5.12
+- Bump @vitest/coverage-v8 from 4.1.11 to 5.0.0
+- Bump @types/node from 26.4.0 to 26.4.1
+- Bump globals from 17.11.0 to 17.12.0
+- Magic-link login: only ask for the code, not the token
+- Add a real email queue and fix project deletion in the SaaS example
+- Add experimental-saas-monorepo example
+- Merge pull request #301 from anephenix/dependabot/npm_and_yarn/multi-db0bac8a53
+- Merge pull request #303 from anephenix/fix/fast-uri-vulnerabilities
+- Merge pull request #302 from anephenix/fix/update-changelog-no-tags
+- Fix 4 Dependabot alerts: bump fast-uri to a patched version
+- Fix update-changelog script for repos with no release tags yet
+- Bump fast-uri
+
 ### 0.0.14 - Monday 31st August, 2026
 
 - Merge pull request #300 from anephenix/feature/cli-generator

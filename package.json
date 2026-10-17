@@ -76,7 +76,10 @@
     {
       "name": "index",
       "path": "dist/index.js",
-      "limit": "11 KB"
+      "limit": "11 KB",
+      "ignore": [
+        "node:path"
+      ]
     },
     {
       "name": "cli",
